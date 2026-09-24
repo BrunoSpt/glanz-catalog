@@ -7,7 +7,7 @@ Catálogo digital da GLANZ Semi Joias (Petrolina, PE). Site estático: HTML, CSS
 Todas as peças ficam em [`produtos.json`](produtos.json). As páginas de categoria montam os cards a partir dele, então **não é preciso mexer no HTML**.
 
 ```json
-{ "nome": "Brinco Coração Cristal", "categoria": "brincos", "preco": 49.90, "fotos": ["assets/produtos/brinco-coracao.jpg"] }
+{ "nome": "Brinco Coração Cristal", "categoria": "brincos", "preco": 49.90, "fotos": ["assets/produtos/brinco-coracao.webp"] }
 ```
 
 | Campo       | O que é |
@@ -34,7 +34,13 @@ O botão "Perguntar no Direct" de cada peça:
 ## Estrutura das imagens
 
 - `assets/marca/` — logo, marca e ícone (sunburst)
-- `assets/produtos/` — fotos das peças
+- `assets/produtos/` — fotos das peças, em **WebP** (bem mais leve que JPG; dá pra converter em sites como squoosh.app)
+
+## Prévia ao compartilhar o link
+
+Cada página tem tags Open Graph (título, descrição e imagem) para o link aparecer com foto ao ser colado no Instagram, WhatsApp etc. A imagem é `assets/marca/og-image.jpg` (1200×630).
+
+Essas tags precisam do endereço completo do site. Hoje apontam para `https://brunospt.github.io/projeto-catalago-semijoias/` (GitHub Pages). Se o site for publicado em outro endereço (ex.: domínio próprio), troque esse endereço nas tags `og:url` e `og:image` de todas as páginas.
 
 ## Rodar localmente
 

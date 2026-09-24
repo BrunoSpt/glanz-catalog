@@ -5,7 +5,7 @@
     { "nome": "Anel Trio Texturizado", "categoria": "aneis", "preco": 54.90, "fotos": [], "exemplo": true },
     { "nome": "Anel Infinito", "categoria": "aneis", "preco": 47.90, "fotos": [], "exemplo": true },
 
-    { "nome": "Brinco Coração Cristal", "categoria": "brincos", "preco": 49.90, "fotos": ["assets/produtos/brinco-coracao.jpg"] },
+    { "nome": "Brinco Coração Cristal", "categoria": "brincos", "preco": 49.90, "fotos": ["assets/produtos/brinco-coracao.webp"] },
     { "nome": "Brinco Argola Trançada", "categoria": "brincos", "preco": 39.90, "fotos": [], "exemplo": true },
     { "nome": "Brinco Gota Zircônia", "categoria": "brincos", "preco": 44.90, "fotos": [], "exemplo": true },
 
