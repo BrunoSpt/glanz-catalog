@@ -1,0 +1,24 @@
+{
+  "instagram": "glanz_semijoiaspnz",
+  "produtos": [
+    { "nome": "Anel Solitário Zircônia", "categoria": "aneis", "preco": 59.90, "fotos": [], "exemplo": true },
+    { "nome": "Anel Trio Texturizado", "categoria": "aneis", "preco": 54.90, "fotos": [], "exemplo": true },
+    { "nome": "Anel Infinito", "categoria": "aneis", "preco": 47.90, "fotos": [], "exemplo": true },
+
+    { "nome": "Brinco Coração Cristal", "categoria": "brincos", "preco": 49.90, "fotos": ["assets/produtos/brinco-coracao.jpg"] },
+    { "nome": "Brinco Argola Trançada", "categoria": "brincos", "preco": 39.90, "fotos": [], "exemplo": true },
+    { "nome": "Brinco Gota Zircônia", "categoria": "brincos", "preco": 44.90, "fotos": [], "exemplo": true },
+
+    { "nome": "Colar Ponto de Luz", "categoria": "colares", "preco": 64.90, "fotos": [], "exemplo": true },
+    { "nome": "Colar Veneziana", "categoria": "colares", "preco": 58.90, "fotos": [], "exemplo": true },
+    { "nome": "Colar Coração Duplo", "categoria": "colares", "preco": 52.90, "fotos": [], "exemplo": true },
+
+    { "nome": "Pulseira Riviera", "categoria": "pulseiras", "preco": 69.90, "fotos": [], "exemplo": true },
+    { "nome": "Pulseira Elos Finos", "categoria": "pulseiras", "preco": 42.90, "fotos": [], "exemplo": true },
+    { "nome": "Pulseira Tênis Zircônia", "categoria": "pulseiras", "preco": 74.90, "fotos": [], "exemplo": true },
+
+    { "nome": "Pingente Gota de Luz", "categoria": "pingentes", "preco": 38.90, "fotos": [], "exemplo": true },
+    { "nome": "Pingente Estrela", "categoria": "pingentes", "preco": 34.90, "fotos": [], "exemplo": true },
+    { "nome": "Pingente Coração Vazado", "categoria": "pingentes", "preco": 36.90, "fotos": [], "exemplo": true }
+  ]
+}
