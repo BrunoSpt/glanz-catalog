@@ -4,6 +4,14 @@ document.querySelectorAll('.carousel').forEach(carousel => {
   const slides = carousel.querySelectorAll('.slide');
   if(!dotsWrap || slides.length <= 1) return; // 1 foto só: sem pontinhos
 
+  // cria um pontinho por foto, igual ao carrossel da home
+  if(!dotsWrap.children.length){
+    slides.forEach((_, i) => {
+      const dot = document.createElement('span');
+      if(i === 0) dot.classList.add('active');
+      dotsWrap.appendChild(dot);
+    });
+  }
   const dots = Array.from(dotsWrap.children);
   const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
