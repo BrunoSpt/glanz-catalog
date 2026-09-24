@@ -8,14 +8,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;1,500&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/css/styles.css">
+<link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
 <header class="site-header">
   <div class="bar">
     <a class="brandmark" href="index.html">
-      <img class="mark-icon" src="assets/sunburst.png" alt="">
+      <img class="mark-icon" src="assets/marca/sunburst.png" alt="">
       <span class="word">GLANZ</span>
     </a>
     <a class="back-link" href="index.html">← Catálogo</a>
@@ -32,59 +32,25 @@
   </nav>
 
   <section class="page-head container">
-    <p class="kicker">Catálogo · 3 peças</p>
+    <p class="kicker" id="productCount">Catálogo</p>
     <h1 class="serif">Pingentes</h1>
     <p>Pequenos detalhes que fazem toda a diferença.</p>
   </section>
 
   <section class="container">
-    <div class="product-grid">
-      <div class="card">
-        <div class="carousel">
-          <div class="slide placeholder"><span class="badge-demo">Exemplo</span><img src="assets/sunburst.png" alt=""><span>Foto em breve</span></div>
-        </div>
-        <div class="dots"></div>
-        <div class="info">
-          <p class="name serif">Pingente Gota de Luz</p>
-          <p class="price">R$ 38,90</p>
-          <a class="ask" href="https://ig.me/m/SEU_USUARIO_INSTAGRAM?text=Ol%C3%A1%21%20Tenho%20interesse%20na%20pe%C3%A7a%3A%20Pingente%20Gota%20de%20Luz" target="_blank" rel="noopener">Perguntar no Direct →</a>
-        </div>
-      </div>
-      <div class="card">
-        <div class="carousel">
-          <div class="slide placeholder"><span class="badge-demo">Exemplo</span><img src="assets/sunburst.png" alt=""><span>Foto em breve</span></div>
-        </div>
-        <div class="dots"></div>
-        <div class="info">
-          <p class="name serif">Pingente Estrela</p>
-          <p class="price">R$ 34,90</p>
-          <a class="ask" href="https://ig.me/m/SEU_USUARIO_INSTAGRAM?text=Ol%C3%A1%21%20Tenho%20interesse%20na%20pe%C3%A7a%3A%20Pingente%20Estrela" target="_blank" rel="noopener">Perguntar no Direct →</a>
-        </div>
-      </div>
-      <div class="card">
-        <div class="carousel">
-          <div class="slide placeholder"><span class="badge-demo">Exemplo</span><img src="assets/sunburst.png" alt=""><span>Foto em breve</span></div>
-        </div>
-        <div class="dots"></div>
-        <div class="info">
-          <p class="name serif">Pingente Coração Vazado</p>
-          <p class="price">R$ 36,90</p>
-          <a class="ask" href="https://ig.me/m/SEU_USUARIO_INSTAGRAM?text=Ol%C3%A1%21%20Tenho%20interesse%20na%20pe%C3%A7a%3A%20Pingente%20Cora%C3%A7%C3%A3o%20Vazado" target="_blank" rel="noopener">Perguntar no Direct →</a>
-        </div>
-      </div>
-    </div>
+    <div class="product-grid" id="productGrid" data-categoria="pingentes"></div>
   </section>
 </main>
 
 <footer class="site-footer">
-  <img class="mark" src="assets/glanz-mark.png" alt="GLANZ Semi Joias">
-  <p>@SEU_USUARIO_INSTAGRAM · Petrolina, PE</p>
+  <img class="mark" src="assets/marca/glanz-mark.png" alt="GLANZ Semi Joias">
+  <p><span data-ig-handle>@glanz_semijoiaspnz</span> · Petrolina, PE</p>
 </footer>
 
-<a class="ig-float" href="https://ig.me/m/SEU_USUARIO_INSTAGRAM" target="_blank" rel="noopener" aria-label="Falar no Instagram Direct">
+<a class="ig-float" href="https://ig.me/m/glanz_semijoiaspnz" data-ig-link target="_blank" rel="noopener" aria-label="Falar no Instagram Direct">
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.2" cy="6.8" r="1"/></svg>
 </a>
 
-<script src="/js/script.js"></script>
+<script src="js/script.js"></script>
 </body>
 </html>
