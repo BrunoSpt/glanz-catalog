@@ -101,6 +101,8 @@ function renderCard(produto, instagram){
     const slide = el('div', 'slide placeholder');
     const icon = el('img');
     icon.src = 'assets/marca/sunburst.png';
+    icon.width = 160;
+    icon.height = 165;
     icon.alt = '';
     slide.append(icon, el('span', null, 'Foto em breve'));
     carousel.appendChild(slide);
@@ -189,9 +191,13 @@ fetch('produtos.json')
     dots.forEach((d, di) => d.classList.toggle('active', di === index));
   }
 
-  const timer = setInterval(() => {
-    if(!paused) goTo(index + 1);
-  }, 3200);
+  // quem ativou "reduzir movimento" no celular não recebe a troca automática de fotos
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reduceMotion){
+    setInterval(() => {
+      if(!paused) goTo(index + 1);
+    }, 3200);
+  }
 
   // pausa o autoplay quando a pessoa mexe no carrossel, retoma depois de um tempo parada
   track.addEventListener('pointerdown', () => {
