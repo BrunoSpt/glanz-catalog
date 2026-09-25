@@ -1,13 +1,14 @@
-// GLANZ SEMI JOIAS — catálogo montado a partir do produtos.json
+// GLANZ SEMI JOIAS — catalog rendered from products.json
+// Code is in English; every user-facing string stays in Brazilian Portuguese.
 
-// sincroniza os pontinhos do carrossel de um card com a foto visível
+// Syncs a card's carousel dots with the visible photo
 function initCardCarousel(card){
   const carousel = card.querySelector('.carousel');
   const dotsWrap = card.querySelector('.dots');
   const slides = carousel.querySelectorAll('.slide');
-  if(slides.length <= 1) return; // 1 foto só: sem pontinhos
+  if(slides.length <= 1) return; // single photo: no dots
 
-  // cria um pontinho por foto, igual ao carrossel da home
+  // one dot per photo, same as the home carousel
   slides.forEach((_, i) => {
     const dot = document.createElement('span');
     if(i === 0) dot.classList.add('active');
@@ -26,7 +27,7 @@ function initCardCarousel(card){
   slides.forEach(slide => observer.observe(slide));
 }
 
-// cria um elemento com classe e texto (textContent evita problema com caracteres especiais nos nomes)
+// Creates an element with class and text (textContent keeps special characters in names safe)
 function el(tag, className, text){
   const node = document.createElement(tag);
   if(className) node.className = className;
@@ -36,16 +37,16 @@ function el(tag, className, text){
 
 const formatPrice = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-const directMessage = (nomePeca) => 'Olá! Tenho interesse na peça: ' + nomePeca;
+const directMessage = (productName) => 'Olá! Tenho interesse na peça: ' + productName;
 
-// ig.me/m/<usuário> abre a conversa no Direct; o ?text= preenche a mensagem
-// nas versões do Instagram que suportam (não é garantido)
-function directLink(instagram, nomePeca){
+// ig.me/m/<username> opens the Instagram Direct chat; ?text= pre-fills the message
+// on Instagram versions that support it (not guaranteed)
+function directLink(instagram, productName){
   const base = 'https://ig.me/m/' + instagram;
-  return nomePeca ? base + '?text=' + encodeURIComponent(directMessage(nomePeca)) : base;
+  return productName ? base + '?text=' + encodeURIComponent(directMessage(productName)) : base;
 }
 
-// aviso rápido no rodapé da tela
+// Short notice at the bottom of the screen
 let toastTimer = null;
 function showToast(text){
   let toast = document.getElementById('toast');
@@ -61,12 +62,12 @@ function showToast(text){
   toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
 }
 
-// como o texto pré-preenchido nem sempre funciona, copia a mensagem pra cliente colar no Direct
-function copyDirectMessage(nomePeca){
-  const text = directMessage(nomePeca);
+// The pre-filled text is unreliable, so the message is also copied for the customer to paste in Direct
+function copyDirectMessage(productName){
+  const text = directMessage(productName);
   const done = () => showToast('Mensagem copiada — é só colar no Direct');
 
-  // método antigo primeiro: funciona em mais lugares (inclusive navegadores internos de apps)
+  // Legacy method first: works in more places (including in-app browsers)
   const area = el('textarea');
   area.value = text;
   area.setAttribute('readonly', '');
@@ -83,16 +84,16 @@ function copyDirectMessage(nomePeca){
   }
 }
 
-function renderCard(produto, instagram){
+function renderCard(product, instagram){
   const card = el('div', 'card');
   const carousel = el('div', 'carousel');
 
-  if(produto.fotos && produto.fotos.length){
-    produto.fotos.forEach((foto, i) => {
+  if(product.photos && product.photos.length){
+    product.photos.forEach((photo, i) => {
       const slide = el('div', 'slide');
       const img = el('img');
-      img.src = foto;
-      img.alt = produto.nome + (produto.fotos.length > 1 ? ` — foto ${i + 1}` : '') + ' — GLANZ Semi Joias';
+      img.src = photo;
+      img.alt = product.name + (product.photos.length > 1 ? ` — foto ${i + 1}` : '') + ' — GLANZ Semi Joias';
       img.loading = 'lazy';
       slide.appendChild(img);
       carousel.appendChild(slide);
@@ -100,26 +101,26 @@ function renderCard(produto, instagram){
   } else {
     const slide = el('div', 'slide placeholder');
     const icon = el('img');
-    icon.src = 'assets/marca/sunburst.png';
+    icon.src = 'assets/brand/sunburst.png';
     icon.width = 160;
     icon.height = 165;
     icon.alt = '';
     slide.append(icon, el('span', null, 'Foto em breve'));
     carousel.appendChild(slide);
   }
-  if(produto.exemplo){
+  if(product.sample){
     carousel.firstElementChild.prepend(el('span', 'badge-demo', 'Exemplo'));
   }
 
   const info = el('div', 'info');
   const ask = el('a', 'ask', 'Perguntar no Direct →');
-  ask.href = directLink(instagram, produto.nome);
+  ask.href = directLink(instagram, product.name);
   ask.target = '_blank';
   ask.rel = 'noopener';
-  ask.addEventListener('click', () => copyDirectMessage(produto.nome));
+  ask.addEventListener('click', () => copyDirectMessage(product.name));
   info.append(
-    el('p', 'name serif', produto.nome),
-    el('p', 'price', formatPrice(produto.preco)),
+    el('p', 'name serif', product.name),
+    el('p', 'price', formatPrice(product.price)),
     ask
   );
 
@@ -128,30 +129,30 @@ function renderCard(produto, instagram){
 }
 
 function renderCategory(grid, data){
-  const categoria = grid.dataset.categoria;
-  const produtos = data.produtos.filter(p => p.categoria === categoria);
+  const category = grid.dataset.category;
+  const products = data.products.filter(p => p.category === category);
 
   const count = document.getElementById('productCount');
-  if(count) count.textContent = `Catálogo · ${produtos.length} ${produtos.length === 1 ? 'peça' : 'peças'}`;
+  if(count) count.textContent = `Catálogo · ${products.length} ${products.length === 1 ? 'peça' : 'peças'}`;
 
-  if(!produtos.length){
+  if(!products.length){
     grid.appendChild(el('p', 'grid-message', 'Novas peças em breve.'));
     return;
   }
-  produtos.forEach(produto => {
-    const card = renderCard(produto, data.instagram);
+  products.forEach(product => {
+    const card = renderCard(product, data.instagram);
     grid.appendChild(card);
     initCardCarousel(card);
   });
 }
 
-// usuário do Instagram vem do produtos.json: atualiza links e @ do rodapé em todas as páginas
+// The Instagram username comes from products.json: updates links and the footer handle on every page
 function applyInstagram(instagram){
   document.querySelectorAll('[data-ig-link]').forEach(a => { a.href = directLink(instagram); });
   document.querySelectorAll('[data-ig-handle]').forEach(s => { s.textContent = '@' + instagram; });
 }
 
-fetch('produtos.json')
+fetch('products.json')
   .then(res => {
     if(!res.ok) throw new Error('HTTP ' + res.status);
     return res.json();
@@ -162,12 +163,12 @@ fetch('produtos.json')
     if(grid) renderCategory(grid, data);
   })
   .catch(err => {
-    console.error('Não foi possível carregar produtos.json:', err);
+    console.error('Could not load products.json:', err);
     const grid = document.getElementById('productGrid');
     if(grid) grid.appendChild(el('p', 'grid-message', 'Não foi possível carregar as peças. Tente recarregar a página.'));
   });
 
-// ---- carrossel autoplay da home (destaques do catálogo) ----
+// ---- home autoplay carousel (catalog highlights) ----
 (function(){
   const track = document.getElementById('heroTrack');
   const dotsWrap = document.getElementById('heroDots');
@@ -191,7 +192,7 @@ fetch('produtos.json')
     dots.forEach((d, di) => d.classList.toggle('active', di === index));
   }
 
-  // quem ativou "reduzir movimento" no celular não recebe a troca automática de fotos
+  // No automatic slide changes for users who enabled "reduce motion"
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   if(!reduceMotion){
     setInterval(() => {
@@ -199,7 +200,7 @@ fetch('produtos.json')
     }, 3200);
   }
 
-  // pausa o autoplay quando a pessoa mexe no carrossel, retoma depois de um tempo parada
+  // Pause autoplay while the user interacts; resume after a moment of inactivity
   track.addEventListener('pointerdown', () => {
     paused = true;
     clearTimeout(resumeTimer);
