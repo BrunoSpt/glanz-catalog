@@ -126,6 +126,14 @@ button{font:inherit;color:inherit}
 .category-circle .circle-placeholder img{object-fit:contain;padding:14px;background:var(--brand-gradient)}
 .category-circle .label{font-size:12px;color:var(--maroon)}
 
+/* ---------- collection note (home) ---------- */
+.collection-note{
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  max-width:1080px;margin:10px auto 0;padding:0 var(--gutter);
+  font-size:12.5px;letter-spacing:.02em;color:var(--maroon);text-align:center;
+}
+.collection-note .icon{width:16px;height:16px;color:var(--orange)}
+
 /* ---------- home highlights carousel ---------- */
 .carousel-hero{margin-top:8px;position:relative}
 .carousel-hero .track{
@@ -154,10 +162,10 @@ button{font:inherit;color:inherit}
 .guarantees li{display:flex;align-items:center;gap:10px;color:var(--maroon);font-size:13px}
 .guarantees .icon{width:22px;height:22px;color:var(--orange)}
 
-/* home strip: three columns */
+/* home strip: one column per guarantee */
 .section-tight{padding-top:22px;padding-bottom:4px}
 .guarantees:not(.guarantees-detail){
-  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(0,1fr));gap:8px;
   background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px 10px;
 }
 .guarantees:not(.guarantees-detail) li{flex-direction:column;text-align:center;gap:7px;font-size:11.5px;line-height:1.3}
@@ -216,7 +224,6 @@ button{font:inherit;color:inherit}
 .badge-sold-out{background:#5b4a45;color:#fff}
 .badge-sale{background:var(--maroon);color:#fff}
 .badge-new{background:var(--sky);color:var(--maroon)}
-.badge-bestseller{background:var(--orange);color:var(--maroon)}
 
 .list-toggle{
   position:absolute;top:8px;right:8px;
@@ -272,8 +279,10 @@ button{font:inherit;color:inherit}
 .detail-info .price .price-current{color:var(--maroon)}
 .detail-info .price-old{font-size:15px}
 .stock-note{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.installments{margin:6px 0 0;font-size:14px;color:var(--muted)}
 .detail-actions{display:grid;gap:10px}
 .detail-actions-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.detail-actions-row.is-single{grid-template-columns:1fr}
 .direct-note{margin:-2px 0 4px;text-align:center;font-size:11.5px;color:var(--muted)}
 .list-toggle-button[aria-pressed="true"]{border-color:var(--maroon)}
 .detail-help{font-size:13px;color:var(--muted);margin:18px 0 0}
@@ -345,8 +354,12 @@ dialog.is-fallback[open]{position:fixed;top:0;bottom:0;z-index:100}
 .drawer-item a{font-family:'Playfair Display',serif;font-size:14.5px;color:var(--maroon);line-height:1.3}
 .drawer-item .item-price{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
 .drawer-empty{padding:24px 20px;font-size:14px;color:var(--muted);line-height:1.5}
+.drawer-notice{margin:12px 20px 0;padding:10px 12px;border-radius:12px;background:var(--sky);color:var(--maroon);font-size:13px;line-height:1.45}
 .drawer-foot{padding:14px 20px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:grid;gap:8px}
 .drawer-note{margin:0;text-align:center;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.drawer-total{margin:0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 8px;font-size:14px;color:var(--muted)}
+.drawer-total strong{font-size:18px;color:var(--maroon)}
+.drawer-installments{flex-basis:100%;font-size:12.5px}
 .drawer-label{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
 .list-message{
   width:100%;resize:none;border:1px solid var(--line);border-radius:12px;background:var(--white);
@@ -371,6 +384,23 @@ dialog.is-fallback[open]{position:fixed;top:0;bottom:0;z-index:100}
 .step h3{margin:2px 0 4px;font-size:15px;font-weight:600;color:var(--maroon)}
 .step p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.5}
 .how-to-buy-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+
+/* payment, delivery and warranty: native accordions */
+.policies{display:grid;gap:10px;margin-top:14px}
+.policy{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:0 16px}
+.policy summary{
+  display:flex;align-items:center;justify-content:space-between;min-height:52px;
+  font-size:15px;font-weight:600;color:var(--maroon);cursor:pointer;list-style:none;
+}
+.policy summary::-webkit-details-marker{display:none} /* Safari */
+.policy summary::after{content:'+';font-size:20px;font-weight:400;color:var(--orange)}
+.policy[open] summary::after{content:'−'}
+.policy ul{margin:0 0 12px;padding-left:18px}
+.policy li,.policy p{font-size:13.5px;line-height:1.55;color:var(--muted)}
+.policy li{margin-bottom:6px}
+.policy li strong,.policy p strong{color:var(--maroon)}
+.policy p{margin:0 0 10px}
+.policy-label{margin-top:14px !important;margin-bottom:6px !important;font-weight:600;color:var(--maroon) !important}
 .how-to-buy-actions .btn{flex:1 1 180px}
 
 /* ---------- footer ---------- */

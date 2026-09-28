@@ -33,7 +33,7 @@
 <link rel="stylesheet" href="/css/styles.css">
 <script>document.documentElement.classList.add('js')</script>
 </head>
-<body data-instagram="{{ site.instagram }}" data-list-message="{{ site.listMessage }}" data-placeholder-image="{{ '/assets/brand/sunburst.png' | withBase }}">
+<body data-instagram="{{ site.instagram }}" data-list-message="{{ site.listMessage }}" data-placeholder-image="{{ '/assets/brand/sunburst.png' | withBase }}" data-installments="{{ storePolicies.installments | dump }}">
 
 <header class="site-header">
   <div class="bar">
@@ -75,9 +75,11 @@
       <h2 class="serif" id="interestListTitle">Sua lista de interesse</h2>
       <button class="icon-button" type="button" data-list-close aria-label="Fechar">{{ icon("close") }}</button>
     </div>
+    <p class="drawer-notice" data-list-notice hidden></p>
     <ul class="drawer-items" data-list-items></ul>
     <p class="drawer-empty" data-list-empty>Sua lista está vazia. Toque no {{ icon("heart", "icon icon-inline") }} das peças que você gostou.</p>
     <div class="drawer-foot" data-list-foot hidden>
+      <p class="drawer-total"><span>Total</span> <strong data-list-total></strong> <span class="drawer-installments" data-list-installments></span></p>
       {#- Two explicit steps: copying while Instagram opens is unreliable on phones #}
       <label class="drawer-label" for="listMessage">Mensagem para enviar</label>
       <textarea class="list-message" id="listMessage" rows="4" readonly data-list-message-box></textarea>
@@ -92,6 +94,8 @@
   </div>
 </dialog>
 
+{#- Pieces currently available (sold ones and past collections are left out); read by js/interest-list.js #}
+<script type="application/json" id="catalogIndex">{{ products | catalogIndex | safe }}</script>
 <script type="module" src="/js/main.js"></script>
 </body>
 </html>

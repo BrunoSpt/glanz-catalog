@@ -56,23 +56,29 @@
       <p class="kicker">{{ category.label }}</p>
       <h1 class="serif">{{ product.name }}</h1>
       {{ price(product) }}
+      {%- set plan = product.price | installment %}
+      {%- if plan and not product.soldOut %}
+      <p class="installments">ou {{ plan.count }}x de {{ plan.value }} sem juros</p>
+      {%- endif %}
       {%- if product.soldOut %}
-      <p class="stock-note">Esgotada no momento — pergunte no Direct sobre a reposição.</p>
+      <p class="stock-note">Esta peça já foi vendida — nossas peças são únicas. Pergunte no Direct por peças parecidas.</p>
       {%- endif %}
 
       {%- set guaranteesClass = "guarantees-detail" %}
       {% include "partials/guarantees.njk" %}
 
       <div class="detail-actions">
-        {{ directButton(product, "Perguntar no Direct", "btn btn-primary btn-block") }}
+        {{ directButton(product, "Perguntar por peças parecidas" if product.soldOut else "Perguntar no Direct", "btn btn-primary btn-block") }}
         <p class="direct-note">Ao tocar, a mensagem é copiada. Se o Direct abrir sem ela, é só colar.</p>
-        <div class="detail-actions-row">
+        <div class="detail-actions-row{% if product.soldOut %} is-single{% endif %}">
+          {%- if not product.soldOut %}
           {{ listToggle(product, "btn btn-secondary list-toggle-button", true) }}
+          {%- endif %}
           <button class="btn btn-secondary" type="button" data-share data-share-title="{{ product.name }} — {{ site.name }}" data-share-url="{{ page.url | absoluteUrl }}">{{ icon("share") }} Compartilhar</button>
         </div>
       </div>
 
-      <p class="detail-help">Dúvidas sobre pagamento e entrega? Veja <a href="/#como-comprar">como comprar</a>.</p>
+      <p class="detail-help">Parcelamento, entrega e garantia: veja <a href="/#como-comprar">como comprar</a>.</p>
     </div>
   </article>
 

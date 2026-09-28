@@ -2,8 +2,10 @@ import { readFileSync } from "node:fs";
 import { HtmlBasePlugin } from "@11ty/eleventy";
 import { validateData } from "./scripts/validate-data.js";
 import { slugify } from "./lib/slugify.js";
+import { installmentPlan } from "./src/js/installments.js";
 
 const site = JSON.parse(readFileSync("./src/_data/site.json", "utf8"));
+const policies = JSON.parse(readFileSync("./src/_data/storePolicies.json", "utf8"));
 
 // The site lives in a subfolder on GitHub Pages ("/glanz-catalog/"); derived from site.url
 // so the address is still defined in one place
@@ -37,13 +39,42 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("brl", (value) => brlFormatter.format(value));
 
   // ---- product lists ----
-  eleventyConfig.addFilter("byCategory", (products, slug) => products.filter((p) => p.category === slug));
+  // Pieces are unique: a sold piece stays visible (badge "Vendida") but after the available ones
+  const availableFirst = (products) => [...products].sort((a, b) => Number(!!a.soldOut) - Number(!!b.soldOut));
+  eleventyConfig.addFilter("byCategory", (products, slug) => availableFirst(products.filter((p) => p.category === slug)));
+  eleventyConfig.addFilter("available", (products) => products.filter((p) => !p.soldOut));
   // products | flagged("isNew") -> products with isNew: true
   eleventyConfig.addFilter("flagged", (products, key) => products.filter((p) => p[key] === true));
   eleventyConfig.addFilter("related", (products, product, limit = 4) =>
-    products.filter((p) => p.category === product.category && p.name !== product.name).slice(0, limit)
+    availableFirst(products.filter((p) => p.category === product.category && p.name !== product.name)).slice(0, limit)
   );
   eleventyConfig.addFilter("categoryOf", (categories, slug) => categories.find((c) => c.slug === slug));
+
+  // 98.9 -> { count: 2, value: "R$ 49,45" } following storePolicies.installments; null when 1x only
+  eleventyConfig.addFilter("installment", (total) => {
+    const plan = installmentPlan(total, policies.installments);
+    return plan && { count: plan.count, value: brlFormatter.format(plan.value) };
+  });
+
+  // Available pieces as { id: { name, price, url, image } } for js/interest-list.js, so lists saved
+  // on a customer's phone drop pieces that were sold or left the collection
+  eleventyConfig.addFilter("catalogIndex", (products) => {
+    const index = Object.fromEntries(
+      products
+        .filter((p) => !p.soldOut)
+        .map((p) => [
+          slugify(p.name),
+          {
+            name: p.name,
+            price: brlFormatter.format(p.price),
+            priceValue: p.price,
+            url: pathPrefix + productUrl(p).slice(1),
+            image: p.photos.length ? pathPrefix + p.photos[0] : "",
+          },
+        ])
+    );
+    return JSON.stringify(index).replace(/</g, "\\u003c"); // safe inside a <script> element
+  });
 
   // ---- URLs ----
   eleventyConfig.addFilter("productSlug", (product) => slugify(product.name));

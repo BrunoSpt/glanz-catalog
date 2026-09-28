@@ -10,8 +10,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src");
 const DATA = path.join(SRC, "_data");
 
-const PRODUCT_FIELDS = new Set(["name", "category", "price", "compareAtPrice", "photos", "sample", "isNew", "bestseller", "soldOut"]);
-const BOOLEAN_FIELDS = ["sample", "isNew", "bestseller", "soldOut"];
+const PRODUCT_FIELDS = new Set(["name", "category", "price", "compareAtPrice", "photos", "sample", "isNew", "soldOut"]);
+const BOOLEAN_FIELDS = ["sample", "isNew", "soldOut"];
 
 function readJson(file, errors) {
   const fullPath = path.join(DATA, file);
@@ -28,10 +28,39 @@ export function validateData() {
   const site = readJson("site.json", errors);
   const categories = readJson("categories.json", errors);
   const products = readJson("products.json", errors);
+  const policies = readJson("storePolicies.json", errors);
   if (errors.length) return errors;
 
   if (!/^https:\/\/.+\/$/.test(site.url)) errors.push(`site.json: "url" must start with https:// and end with "/"`);
   if (!site.instagram || site.instagram.startsWith("@")) errors.push(`site.json: "instagram" must be the username without "@"`);
+  const collection = site.collection || {};
+  if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(collection.firstCycle || "")) {
+    errors.push(`site.json: "collection.firstCycle" must be the month a cycle started, like "2026-09"`);
+  }
+  if (!Number.isInteger(collection.months) || collection.months < 1 || collection.months > 12) {
+    errors.push(`site.json: "collection.months" must be a whole number of months, like 2`);
+  }
+
+  // storePolicies.json: installments drive the prices shown, so they must be well-formed
+  if (!Array.isArray(policies.installments)) {
+    errors.push(`storePolicies.json: "installments" must be a list like [{ "above": 80, "count": 2 }]`);
+  } else {
+    policies.installments.forEach((rule, i) => {
+      if (typeof rule.above !== "number" || rule.above < 0 || !Number.isInteger(rule.count) || rule.count < 2) {
+        errors.push(`storePolicies.json: installment rule #${i + 1} needs "above" (a price) and "count" (2 or more)`);
+      }
+    });
+  }
+  if (!Array.isArray(policies.delivery) || !policies.delivery.every((line) => typeof line === "string")) {
+    errors.push(`storePolicies.json: "delivery" must be a list of sentences`);
+  }
+  const warranty = policies.warranty || {};
+  for (const key of ["summary", "howToClaim"]) {
+    if (typeof warranty[key] !== "string" || !warranty[key].trim()) errors.push(`storePolicies.json: "warranty.${key}" is required`);
+  }
+  for (const key of ["covers", "doesNotCover"]) {
+    if (!Array.isArray(warranty[key])) errors.push(`storePolicies.json: "warranty.${key}" must be a list`);
+  }
 
   const slugs = new Set();
   categories.forEach((c, i) => {

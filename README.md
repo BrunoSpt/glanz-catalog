@@ -15,8 +15,10 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Product pages:** every product gets its own shareable page (`/products/<name>/`) with a photo gallery, full-screen zoom, store guarantees, related products and a share button (native share sheet on phones, copy link elsewhere).
 - **Interest list:** customers heart the pieces they like and send the whole list in a single Instagram Direct message. Stored in `localStorage` on the customer's device; no backend.
 - **Instagram Direct integration:** each product opens a Direct chat with a pre-written message naming the piece and linking to its page. Instagram doesn't always honor pre-filled text, so the message is also copied to the clipboard, with a toast telling the customer to paste it.
-- **Badges:** "Novidade", "Mais vendido", "Promoção" (with the original price struck through) and "Esgotado", driven by product fields.
-- **Home page:** category shortcuts styled like Instagram story highlights, highlights carousel, guarantees, "Novidades" and "Mais vendidos" sections and a "Como comprar" guide.
+- **Unique pieces, rotating collection:** every piece is one of a kind and the collection is replaced every two months. Sold pieces stay visible as "Vendida" (listed last, can't be added to the list); interest lists saved on customers' phones automatically drop pieces that were sold or left the collection; links to past pieces land on a "piece no longer available" page that shows what is available now; the home page shows the current collection ("coleção de setembro e outubro · renovada a cada 2 meses"), worked out in the browser from the date, so it rolls over every two months with no manual update.
+- **Store policies:** interest-free installment rules, delivery and warranty live in `storePolicies.json`; product pages show the installment plan for their price and the interest list shows the total with its plan, all from the same rules (`js/installments.js`, shared by the build and the browser).
+- **Badges:** "Novidade", "Promoção" (with the original price struck through) and "Vendida", driven by product fields.
+- **Home page:** category shortcuts styled like Instagram story highlights, highlights carousel, guarantees, a "Novidades" section and a "Como comprar" guide.
 - **Carousels:** home highlights with autoplay that pauses on interaction (one slide per view on phones, several on desktop); swipeable photo carousels on product cards.
 - **Responsive layout:** two-column grid on phones, three on tablets and four on desktop; product pages switch to a two-column layout on larger screens.
 - **Link previews:** Open Graph tags and a 1200×630 share image on every page.
@@ -35,6 +37,7 @@ src/
     products.json          Products
     highlights.json        Home carousel slides
     howToBuy.json          "Como comprar" steps
+    storePolicies.json     Installments, delivery and warranty
   _includes/
     layouts/base.njk       Shared page layout (<head>, header, footer)
     partials/
@@ -54,6 +57,9 @@ src/
     interest-list.js       Interest list (localStorage + drawer)
     lightbox.js            Full-screen photo zoom
     share.js               Share button
+    collection.js          Current collection cycle notice
+    installments.js        Installment rules (also used by the build)
+    not-found.js           "Piece no longer available" message on the 404 page
     direct-message.js      Copy-to-clipboard for Instagram Direct links
     clipboard.js           Clipboard helper
     toast.js               Toast notification
@@ -87,15 +93,14 @@ eleventy.config.js         Eleventy configuration and template filters
 | `photos`   | Image paths relative to `src/`. More than one turns the card into a swipeable carousel; empty shows a placeholder. |
 | `compareAtPrice` | Optional. Original price, greater than `price`; shows the "Promoção" badge and strikes it through. |
 | `isNew`    | Optional. `true` shows "Novidade" and lists the product under "Novidades" on the home page. |
-| `bestseller` | Optional. `true` shows "Mais vendido" and lists the product under "Mais vendidos". |
-| `soldOut`  | Optional. `true` shows "Esgotado". |
+| `soldOut`  | Optional. `true` marks the piece as sold: "Vendida" badge, listed last, excluded from "Novidades" and from interest lists. |
 | `sample`   | Optional. `true` shows an "Exemplo" badge for demo items. |
 
 Product page URLs are derived from the name (`Brinco Coração Cristal` → `/products/brinco-coracao-cristal/`), so names must be unique; the validation enforces it.
 
 Adding a category only requires a new entry in `categories.json` (an optional `image` shows in its home shortcut); its page is generated automatically.
 
-Store-wide guarantees shown on product pages and the home page live in `site.json` (`guarantees`).
+Store-wide guarantees shown on product pages and the home page live in `site.json` (`guarantees`), as does the collection cycle (`collection.firstCycle` and `collection.months`).
 
 ## Browser support
 

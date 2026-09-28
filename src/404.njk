@@ -9,10 +9,28 @@
   },
 }
 ---
+{%- from "partials/product-card.njk" import productCard %}
+{%- set availablePieces = (products | available).slice(0, 8) %}
   {% include "partials/category-chips.njk" %}
 
-  <section class="page-head container">
-    <p class="kicker">Erro 404</p>
-    <h1 class="serif">Página não encontrada</h1>
-    <p>O endereço pode ter mudado. Escolha uma categoria acima ou volte para o <a href="/"><u>catálogo</u></a>.</p>
+  {#- Links to pieces from past collections land here; js/not-found.js switches to the
+      "piece no longer available" text when the address is a product page #}
+  <section class="page-head container" data-not-found
+    data-product-kicker="Peça indisponível"
+    data-product-title="Essa peça não está mais disponível"
+    data-product-text="Nossas peças são únicas e a coleção se renova a cada 2 meses. Veja o que está disponível agora:">
+    <p class="kicker" data-not-found-kicker>Erro 404</p>
+    <h1 class="serif" data-not-found-title>Página não encontrada</h1>
+    <p data-not-found-text>O endereço pode ter mudado. Escolha uma categoria acima ou veja as peças disponíveis:</p>
   </section>
+
+  {%- if availablePieces | length %}
+  <section class="container home-section" aria-labelledby="available-title">
+    <h2 class="section-title serif" id="available-title">Peças disponíveis</h2>
+    <div class="product-grid">
+      {%- for product in availablePieces %}
+      {{ productCard(product, site.name) }}
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}
