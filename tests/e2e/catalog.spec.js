@@ -3,16 +3,25 @@
 import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { slugify } from "../../lib/slugify.js";
+import { installmentPlan } from "../../src/js/installments.js";
+import { collectionText } from "../../src/js/collection.js";
 
 const data = (file) => JSON.parse(readFileSync(`src/_data/${file}`, "utf8"));
 const site = data("site.json");
 const categories = data("categories.json");
 const products = data("products.json");
+const policies = data("storePolicies.json");
 
 const productPath = (product) => `products/${slugify(product.name)}/`;
 const brl = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
 const normalizeSpaces = (text) => text.replace(/\s+/g, " ").trim(); // Intl uses a non-breaking space
-const productWithPhoto = products.find((p) => p.photos.length);
+const productWithPhoto = products.find((p) => p.photos.length && !p.soldOut);
+const soldPiece = products.find((p) => p.soldOut);
+// Same order as the category pages: available pieces first, sold ones last
+const inCategory = (slug) => {
+  const items = products.filter((p) => p.category === slug);
+  return [...items.filter((p) => !p.soldOut), ...items.filter((p) => p.soldOut)];
+};
 const isPhone = (testInfo) => testInfo.project.name.startsWith("iphone");
 
 // Never leave the site: links to Instagram are blocked during tests
@@ -64,9 +73,17 @@ test("unknown addresses show the store's 404 page", async ({ page }) => {
   await expect(page.locator("link[rel=stylesheet][href*='styles.css']")).toHaveCount(1);
 });
 
+test("links to pieces that left the collection explain it and show what's available", async ({ page }) => {
+  const response = await page.goto("products/peca-de-uma-colecao-antiga/");
+  expect(response.status()).toBe(404);
+  await expect(page.getByRole("heading", { level: 1 })).toHaveText("Essa peça não está mais disponível");
+  const shown = await page.locator('section[aria-labelledby="available-title"] .card').count();
+  expect(shown).toBe(Math.min(8, products.filter((p) => !p.soldOut).length));
+});
+
 test("category pages list their products with formatted prices", async ({ page }) => {
   for (const category of categories) {
-    const items = products.filter((p) => p.category === category.slug);
+    const items = inCategory(category.slug);
     await page.goto(`${category.slug}.html`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(category.label);
     await expect(page.locator(".kicker")).toHaveText(`Catálogo · ${items.length} ${items.length === 1 ? "peça" : "peças"}`);
@@ -78,15 +95,43 @@ test("category pages list their products with formatted prices", async ({ page }
   }
 });
 
-test("home shows new arrivals and bestsellers from the data", async ({ page }) => {
+test("home shows new arrivals from the data", async ({ page }) => {
   await page.goto("");
-  for (const [id, flag] of [["novidades", "isNew"], ["mais-vendidos", "bestseller"]]) {
-    const expected = products.filter((p) => p[flag]).length;
-    const section = page.locator(`section[aria-labelledby="${id}"]`);
-    if (expected) await expect(section.locator(".card")).toHaveCount(expected);
-    else await expect(section).toHaveCount(0);
-  }
+  // the current 2-month cycle is worked out in the browser from today's date
+  await expect(page.locator(".collection-note")).toHaveText(`Peças únicas · ${collectionText(new Date(), site.collection)}`);
+  const expected = products.filter((p) => p.isNew && !p.soldOut).length; // sold pieces aren't "new"
+  const section = page.locator('section[aria-labelledby="novidades"]');
+  if (expected) await expect(section.locator(".card")).toHaveCount(expected);
+  else await expect(section).toHaveCount(0);
   await expect(page.locator("#como-comprar .step")).toHaveCount(data("howToBuy.json").length);
+});
+
+test("how to buy explains installments, delivery and warranty", async ({ page }) => {
+  await page.goto("#como-comprar");
+  const policy = (name) => page.locator(".policy", { has: page.locator("summary", { hasText: name }) });
+
+  await policy("Parcelamento").locator("summary").click();
+  await expect(policy("Parcelamento").locator("li")).toHaveCount(policies.installments.length);
+  await expect(policy("Parcelamento")).toContainText(`${policies.installments.at(-1).count}x sem juros`);
+
+  await policy("Entrega").locator("summary").click();
+  await expect(policy("Entrega")).toContainText(policies.delivery[0]);
+
+  const warranty = policy("Garantia");
+  await expect(warranty.getByText(policies.warranty.howToClaim)).toBeHidden(); // closed by default
+  await warranty.locator("summary").click();
+  await expect(warranty.getByText(policies.warranty.summary)).toBeVisible();
+  await expect(warranty.getByText(policies.warranty.howToClaim)).toBeVisible();
+});
+
+test("product pages show interest-free installments when the price allows", async ({ page }) => {
+  for (const product of products.filter((p) => !p.soldOut).slice(0, 6)) {
+    await page.goto(productPath(product));
+    const plan = installmentPlan(product.price, policies.installments);
+    const line = page.locator(".detail-info .installments");
+    if (plan) expect(normalizeSpaces(await line.textContent())).toBe(normalizeSpaces(`ou ${plan.count}x de ${brl(plan.value)} sem juros`));
+    else await expect(line).toHaveCount(0);
+  }
 });
 
 test("product page shows guarantees and a Direct message linking to the piece", async ({ page }) => {
@@ -106,8 +151,9 @@ test("product page shows guarantees and a Direct message linking to the piece", 
 });
 
 test("interest list: add, keep after reload, copy the message, remove", async ({ page }) => {
-  const category = categories.find((c) => products.filter((p) => p.category === c.slug).length >= 2);
-  const [first, second] = products.filter((p) => p.category === category.slug);
+  const availableIn = (slug) => inCategory(slug).filter((p) => !p.soldOut);
+  const category = categories.find((c) => availableIn(c.slug).length >= 2);
+  const [first, second] = availableIn(category.slug);
   await page.goto(`${category.slug}.html`);
   await page.evaluate(() => localStorage.clear());
   await page.reload();
@@ -128,6 +174,13 @@ test("interest list: add, keep after reload, copy the message, remove", async ({
   expect(message).toContain(site.listMessage);
   expect(normalizeSpaces(message)).toContain(normalizeSpaces(`${first.name} (${brl(first.price)})`));
   expect(normalizeSpaces(message)).toContain(normalizeSpaces(`${second.name} (${brl(second.price)})`));
+
+  // total of the list, with installments when it reaches a threshold
+  const total = Math.round((first.price + second.price) * 100) / 100;
+  expect(normalizeSpaces(await drawer.locator("[data-list-total]").textContent())).toBe(normalizeSpaces(brl(total)));
+  const plan = installmentPlan(total, policies.installments);
+  const installments = normalizeSpaces(await drawer.locator("[data-list-installments]").textContent());
+  expect(installments).toBe(plan ? normalizeSpaces(`ou ${plan.count}x de ${brl(plan.value)} sem juros`) : "");
 
   // Step 1: copy with visible confirmation (regression: copying failed inside the open drawer)
   await drawer.locator("[data-list-copy]").click();
@@ -200,4 +253,41 @@ test("phone details: no blue tap flash, Direct button label on one line", async 
   expect(css).toMatch(/-webkit-tap-highlight-color:\s*transparent/);
   const heights = await page.locator(".card .btn-direct").evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().height));
   for (const height of heights) expect(height).toBeLessThanOrEqual(46); // one line (min-height 44px)
+});
+
+test("a sold piece shows 'Vendida', comes last and can't be added to the list", async ({ page }) => {
+  test.skip(!soldPiece, "no sold piece in the catalog right now");
+  const items = inCategory(soldPiece.category);
+  await page.goto(`${soldPiece.category}.html`);
+  const lastCard = page.locator(".card").last();
+  await expect(lastCard).toContainText(items[items.length - 1].name);
+  const soldCard = page.locator(".card", { hasText: soldPiece.name });
+  await expect(soldCard.locator(".badge-sold-out")).toHaveText("Vendida");
+  await expect(soldCard.locator("[data-list-toggle]")).toHaveCount(0);
+
+  await page.goto(productPath(soldPiece));
+  await expect(page.locator(".detail-actions [data-list-toggle]")).toHaveCount(0);
+  await expect(page.locator(".detail-actions a[data-message]")).toContainText("Perguntar por peças parecidas");
+});
+
+test("a saved interest list drops pieces that were sold or left the collection", async ({ page }) => {
+  const kept = products.find((p) => !p.soldOut);
+  const saved = [
+    { id: "peca-de-uma-colecao-antiga", name: "Peça antiga", price: "R$ 10,00", url: "#", image: "" },
+    ...(soldPiece ? [{ id: slugify(soldPiece.name), name: soldPiece.name, price: "R$ 1,00", url: "#", image: "" }] : []),
+    // stale price: must be refreshed from the current catalog
+    { id: slugify(kept.name), name: kept.name, price: "R$ 1,00", url: "#", image: "" },
+  ];
+  await page.goto("");
+  await page.evaluate((items) => localStorage.setItem("glanz:interest-list", JSON.stringify(items)), saved);
+  await page.reload();
+
+  await expect(page.locator(".list-button [data-list-count]")).toHaveText("1");
+  await page.locator(".list-button").click();
+  const drawer = page.locator("#interestList");
+  const removed = saved.length - 1;
+  await expect(drawer.locator("[data-list-notice]")).toContainText(removed === 1 ? "1 peça da sua lista" : `${removed} peças da sua lista`);
+  const message = await drawer.locator("[data-list-message-box]").inputValue();
+  expect(normalizeSpaces(message)).toContain(normalizeSpaces(`${kept.name} (${brl(kept.price)})`));
+  expect(message).not.toContain("Peça antiga");
 });

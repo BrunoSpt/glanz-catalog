@@ -1,6 +1,7 @@
 // Interest list: customers mark pieces with the heart button and send them all
 // in one Instagram Direct message. Stored only on the customer's device (localStorage).
 import { copyText } from './clipboard.js';
+import { installmentPlan } from './installments.js';
 import { openDialog, closeDialog } from './dialog.js';
 import { showToast } from './toast.js';
 
@@ -17,6 +18,29 @@ function load(){
 
 function save(items){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch(e) { /* list still works for this visit */ }
+}
+
+// Pieces currently available, embedded in every page at build time ({ id: { name, price, url, image } })
+function readCatalog(){
+  try {
+    return JSON.parse(document.getElementById('catalogIndex')?.textContent || 'null');
+  } catch(e) {
+    return null;
+  }
+}
+
+// The collection is replaced every 2 months and pieces are unique: keep only pieces that are
+// still available, refreshing their name, price, photo and link from the current catalog
+function syncWithCatalog(saved, catalog){
+  if(!catalog) return { items: saved, removed: 0 };
+  const items = saved.filter(item => catalog[item.id]).map(item => ({ id: item.id, ...catalog[item.id] }));
+  return { items, removed: saved.length - items.length };
+}
+
+function removedNotice(count){
+  return count === 1
+    ? '1 peça da sua lista não está mais disponível: foi vendida ou saiu da coleção.'
+    : `${count} peças da sua lista não estão mais disponíveis: foram vendidas ou saíram da coleção.`;
 }
 
 function el(tag, className, text){
@@ -39,8 +63,21 @@ export function initInterestList(){
   const copyButton = dialog.querySelector('[data-list-copy]');
   const copyLabel = dialog.querySelector('[data-list-copy-label]');
   const removeIcon = dialog.querySelector('[data-list-close] svg');
+  const noticeEl = dialog.querySelector('[data-list-notice]');
+  const totalEl = dialog.querySelector('[data-list-total]');
+  const installmentsEl = dialog.querySelector('[data-list-installments]');
+  const installmentRules = JSON.parse(document.body.dataset.installments || '[]');
+  const brl = (value) => value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-  let items = load();
+  const catalog = readCatalog();
+  const synced = syncWithCatalog(load(), catalog);
+  let items = synced.items;
+  if(synced.removed){
+    save(items);
+    noticeEl.textContent = removedNotice(synced.removed);
+    noticeEl.hidden = false;
+    showToast(synced.removed === 1 ? 'Uma peça saiu da sua lista' : `${synced.removed} peças saíram da sua lista`);
+  }
   const has = (id) => items.some(item => item.id === id);
 
   function buildMessage(){
@@ -89,6 +126,12 @@ export function initInterestList(){
     listEl.replaceChildren(...items.map(renderItem));
     emptyEl.hidden = items.length > 0;
     footEl.hidden = items.length === 0;
+    // total and interest-free installments (prices come from the current catalog)
+    const total = items.reduce((sum, item) => sum + (item.priceValue || 0), 0);
+    const plan = installmentPlan(total, installmentRules);
+    totalEl.textContent = brl(total);
+    installmentsEl.textContent = plan ? `ou ${plan.count}x de ${brl(plan.value)} sem juros` : '';
+
     const message = buildMessage();
     messageBox.value = message;
     messageBox.rows = Math.min(6, items.length + 1);
@@ -134,7 +177,8 @@ export function initInterestList(){
     button.addEventListener('click', (event) => {
       event.preventDefault();
       const { id, name, price, url, image } = button.dataset;
-      toggle({ id, name, price, url, image });
+      // the catalog entry also carries the numeric price used for the total
+      toggle(catalog?.[id] ? { id, ...catalog[id] } : { id, name, price, url, image });
     });
   });
 
@@ -152,7 +196,7 @@ export function initInterestList(){
   // keep several open tabs in sync
   window.addEventListener('storage', (event) => {
     if(event.key === STORAGE_KEY){
-      items = load();
+      items = syncWithCatalog(load(), catalog).items;
       render();
     }
   });

@@ -1,13 +1,12 @@
 {%- from "partials/icons.njk" import icon -%}
 
-{#- Status badges; "Esgotado" and "Promoção" are derived from soldOut / compareAtPrice -#}
+{#- Status badges; "Vendida" (pieces are unique) and "Promoção" are derived from soldOut / compareAtPrice -#}
 {%- macro badges(product) -%}
 {%- set items = [] -%}
 {%- if product.sample %}{% set items = items.concat([{ "label": "Exemplo", "kind": "sample" }]) %}{% endif -%}
-{%- if product.soldOut %}{% set items = items.concat([{ "label": "Esgotado", "kind": "sold-out" }]) %}{% endif -%}
+{%- if product.soldOut %}{% set items = items.concat([{ "label": "Vendida", "kind": "sold-out" }]) %}{% endif -%}
 {%- if product.compareAtPrice %}{% set items = items.concat([{ "label": "Promoção", "kind": "sale" }]) %}{% endif -%}
 {%- if product.isNew %}{% set items = items.concat([{ "label": "Novidade", "kind": "new" }]) %}{% endif -%}
-{%- if product.bestseller %}{% set items = items.concat([{ "label": "Mais vendido", "kind": "bestseller" }]) %}{% endif -%}
 {%- if items | length %}
 <div class="badges">
   {%- for b in items %}<span class="badge badge-{{ b.kind }}">{{ b.label }}</span>{% endfor %}
@@ -55,7 +54,10 @@
       {%- endif %}
     </a>
     {{ badges(product) }}
+    {#- a sold piece can't be reserved, so no heart #}
+    {%- if not product.soldOut %}
     {{ listToggle(product) }}
+    {%- endif %}
   </div>
   <div class="dots"></div>
   <div class="info">

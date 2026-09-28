@@ -1,0 +1,31 @@
+{
+  "installments": [
+    {
+      "above": 80,
+      "count": 2
+    },
+    {
+      "above": 130,
+      "count": 3
+    },
+    {
+      "above": 210,
+      "count": 4
+    }
+  ],
+  "delivery": [
+    "Entregamos às quartas e aos sábados, depois da confirmação do pagamento.",
+    "O valor da entrega depende do CEP e é informado pelo entregador."
+  ],
+  "warranty": {
+    "summary": "Garantia de 2 anos em todas as peças.",
+    "covers": [
+      "Defeitos no folheado (desbotamento precoce ou descascamento natural).",
+      "Falhas latentes de fabricação."
+    ],
+    "doesNotCover": [
+      "Defeitos gerados por mau uso, como quebras por estiramento, peças arrebentadas ao se vestir, arranhões profundos por atrito, peças amassadas ou danificadas por contato com produtos químicos (perfumes, cremes, cloro)."
+    ],
+    "howToClaim": "Para solicitar a garantia, você deve nos procurar, apresentando o certificado de garantia impresso e a etiqueta original da peça."
+  }
+}

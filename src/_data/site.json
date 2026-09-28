@@ -5,6 +5,11 @@
   "title": "GLANZ Semi Joias — Catálogo",
   "description": "Catálogo digital GLANZ Semi Joias — anéis, brincos, colares, pulseiras e pingentes.",
   "tagline": "Elegância que permanece, brilho que reluz",
+  "collection": {
+    "note": "Peças únicas · coleção renovada a cada 2 meses",
+    "firstCycle": "2026-09",
+    "months": 2
+  },
   "city": "Petrolina, PE",
   "instagram": "glanz_semijoiaspnz",
   "directMessage": "Olá! Tenho interesse na peça: ",
@@ -19,10 +24,6 @@
     {
       "icon": "layers",
       "text": "Banho triplo em ouro 18k"
-    },
-    {
-      "icon": "gem",
-      "text": "Joias em zircônia"
     },
     {
       "icon": "shield",

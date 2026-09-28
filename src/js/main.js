@@ -5,6 +5,8 @@ import { initCardCarousel, initHeroCarousel } from './carousel.js';
 import { initDirectButtons } from './direct-message.js';
 import { initInterestList } from './interest-list.js';
 import { initLightbox } from './lightbox.js';
+import { initNotFound } from './not-found.js';
+import { initCollectionNote } from './collection.js';
 import { initShareButtons } from './share.js';
 
 // iOS Safari only applies :active styles on touch when a touch listener exists
@@ -32,3 +34,5 @@ initDirectButtons();
 initInterestList();
 initLightbox();
 initShareButtons();
+initNotFound();
+initCollectionNote();
