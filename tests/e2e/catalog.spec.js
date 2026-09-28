@@ -98,7 +98,9 @@ test("category pages list their products with formatted prices", async ({ page }
 test("home shows new arrivals from the data", async ({ page }) => {
   await page.goto("");
   // the current 2-month cycle is worked out in the browser from today's date
-  await expect(page.locator(".collection-note")).toHaveText(`Peças únicas · ${collectionText(new Date(), site.collection)}`);
+  await expect(page.locator(".collection-note")).toHaveText(`${site.collection.note} · ${collectionText(new Date(), site.collection)}`);
+  // home strip shows every guarantee, including the home-only ones
+  await expect(page.locator(".section-tight .guarantees li")).toHaveCount(site.guarantees.length);
   const expected = products.filter((p) => p.isNew && !p.soldOut).length; // sold pieces aren't "new"
   const section = page.locator('section[aria-labelledby="novidades"]');
   if (expected) await expect(section.locator(".card")).toHaveCount(expected);
@@ -110,9 +112,11 @@ test("how to buy explains installments, delivery and warranty", async ({ page })
   await page.goto("#como-comprar");
   const policy = (name) => page.locator(".policy", { has: page.locator("summary", { hasText: name }) });
 
-  await policy("Parcelamento").locator("summary").click();
-  await expect(policy("Parcelamento").locator("li")).toHaveCount(policies.installments.length);
-  await expect(policy("Parcelamento")).toContainText(`${policies.installments.at(-1).count}x sem juros`);
+  const payment = policy("Formas de pagamento");
+  await payment.locator("summary").click();
+  for (const method of policies.paymentMethods) await expect(payment).toContainText(method);
+  await expect(payment.locator("li")).toHaveCount(policies.paymentMethods.length + policies.installments.length);
+  await expect(payment).toContainText(`${policies.installments.at(-1).count}x sem juros`);
 
   await policy("Entrega").locator("summary").click();
   await expect(policy("Entrega")).toContainText(policies.delivery[0]);
@@ -138,7 +142,9 @@ test("product page shows guarantees and a Direct message linking to the piece", 
   await page.goto(productPath(productWithPhoto));
   await expect(page.getByRole("heading", { level: 1 })).toHaveText(productWithPhoto.name);
   for (const guarantee of site.guarantees) {
-    await expect(page.locator(".guarantees-detail")).toContainText(guarantee.text);
+    // "homeOnly" claims (e.g. zircônia) may not apply to every piece, so product pages leave them out
+    if (guarantee.homeOnly) await expect(page.locator(".guarantees-detail")).not.toContainText(guarantee.text);
+    else await expect(page.locator(".guarantees-detail")).toContainText(guarantee.text);
   }
   const direct = page.locator(".detail-actions a[data-message]");
   const productUrl = new URL(productPath(productWithPhoto), site.url).href;

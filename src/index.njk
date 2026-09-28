@@ -15,7 +15,7 @@
 
   {#- Pieces are unique and the collection is replaced every 2 months #}
   {#- js/collection.js replaces the generic note with the current cycle ("coleção de setembro e outubro…") #}
-  <p class="collection-note" data-collection data-prefix="Peças únicas"
+  <p class="collection-note" data-collection
     data-first-cycle="{{ site.collection.firstCycle }}" data-months="{{ site.collection.months }}">
     {{ icon("gem") }}
     <span data-collection-text>{{ site.collection.note }}</span>
@@ -65,7 +65,13 @@
     </ol>
     <div class="policies">
       <details class="policy">
-        <summary>Parcelamento</summary>
+        <summary>Formas de pagamento</summary>
+        <ul>
+          {%- for method in storePolicies.paymentMethods %}
+          <li>{{ method }}</li>
+          {%- endfor %}
+        </ul>
+        <p class="policy-label">Parcelamento sem juros no cartão de crédito</p>
         <ul>
           {%- for rule in storePolicies.installments %}
           <li>Compras acima de {{ rule.above | brl }}: em até <strong>{{ rule.count }}x sem juros</strong></li>

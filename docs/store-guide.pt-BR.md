@@ -13,7 +13,7 @@ Os dados do catálogo ficam em arquivos na pasta `src/_data/`:
 | `categories.json`    | Nome, descrição e foto (opcional) de cada categoria |
 | `highlights.json`    | As fotos do carrossel da página inicial |
 | `howToBuy.json`      | Os passos da seção "Como comprar" da página inicial |
-| `storePolicies.json` | Parcelamento, entrega e garantia |
+| `storePolicies.json` | Formas de pagamento, parcelamento, entrega e garantia |
 
 Depois que uma alteração é salva no GitHub (dá pra editar direto pelo site do GitHub, clicando no arquivo e no ícone de lápis), o site é **gerado e publicado sozinho em 1 a 2 minutos**.
 
@@ -90,7 +90,7 @@ Quando as peças não vendidas voltam para o fornecedor e chegam as novas:
 
 ### Aviso da coleção (automático)
 
-A página inicial mostra, por exemplo, "Peças únicas · coleção de setembro e outubro · renovada a cada 2 meses". **Esse aviso muda sozinho** com base na data: em 1º de novembro passa a ser "coleção de novembro e dezembro", sem ninguém precisar mexer em nada.
+A página inicial mostra, por exemplo, "Peças únicas · coleção de setembro e outubro". **Esse aviso muda sozinho** com base na data: em 1º de novembro passa a ser "coleção de novembro e dezembro", sem ninguém precisar mexer em nada.
 
 Ele é calculado a partir do campo `"collection"` do `src/_data/site.json`:
 
@@ -101,10 +101,11 @@ Ele é calculado a partir do campo `"collection"` do `src/_data/site.json`:
 - **Links antigos:** quem abrir o link de uma peça que já foi embora (enviado no Direct ou postado nos stories) vê "Essa peça não está mais disponível", seguido das peças disponíveis agora.
 - **Lista de interesse:** peças que saíram são removidas sozinhas da lista de cada cliente, com um aviso.
 
-## Parcelamento, entrega e garantia
+## Pagamento, entrega e garantia
 
-Esses textos ficam no `src/_data/storePolicies.json` e aparecem na seção "Como comprar" da página inicial.
+Esses textos ficam no `src/_data/storePolicies.json` e aparecem na seção "Como comprar" da página inicial, nos blocos "Formas de pagamento", "Entrega" e "Garantia".
 
+- **Formas de pagamento (`paymentMethods`):** cada item vira uma linha no bloco "Formas de pagamento" (hoje Pix, cartão de débito e cartão de crédito).
 - **Parcelamento (`installments`):** cada regra diz a partir de qual valor (`above`) a compra pode ser dividida em quantas vezes sem juros (`count`). Por exemplo, `{ "above": 80, "count": 2 }` quer dizer "acima de R$ 80, em até 2x". O site usa essas regras para mostrar o parcelamento na página de cada peça e o parcelamento do total na lista de interesse.
 - **Entrega (`delivery`):** cada frase vira um item da lista.
 - **Garantia (`warranty`):** o resumo (`summary`), o que cobre (`covers`), o que não cobre (`doesNotCover`) e como solicitar (`howToClaim`).
@@ -118,7 +119,7 @@ Esses textos ficam no `src/_data/storePolicies.json` e aparecem na seção "Como
 
 ## Garantias e "Como comprar"
 
-As frases de garantia ("Banho triplo em ouro 18k" e "2 anos de garantia pelo fabricante") ficam no campo `"guarantees"` do `src/_data/site.json`. Elas aparecem na página de cada peça, logo abaixo do preço, e numa faixa da página inicial.
+As frases de garantia ("Banho triplo em ouro 18k", "Pedras em zircônia lapidadas" e "2 anos de garantia pelo fabricante") ficam no campo `"guarantees"` do `src/_data/site.json`. Elas aparecem numa faixa da página inicial e na página de cada peça, logo abaixo do preço. Frases marcadas com `"homeOnly": true` aparecem só na página inicial: é o caso de "Pedras em zircônia lapidadas", porque nem toda peça precisa ter zircônia.
 
 Os passos da seção "Como comprar" ficam no `src/_data/howToBuy.json`.
 

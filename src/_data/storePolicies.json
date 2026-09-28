@@ -1,4 +1,9 @@
 {
+  "paymentMethods": [
+    "Pix",
+    "Cartão de débito",
+    "Cartão de crédito"
+  ],
   "installments": [
     {
       "above": 80,
@@ -14,8 +19,8 @@
     }
   ],
   "delivery": [
-    "Entregamos às quartas e aos sábados, depois da confirmação do pagamento.",
-    "O valor da entrega depende do CEP e é informado pelo entregador."
+    "Entregamos para todo o Brasil.",
+    "O valor da entrega é calculado de acordo com o CEP."
   ],
   "warranty": {
     "summary": "Garantia de 2 anos em todas as peças.",

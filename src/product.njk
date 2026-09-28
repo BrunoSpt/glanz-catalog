@@ -8,7 +8,7 @@
     title: (data) => `${data.product.name} — ${data.site.name}`,
     description: (data) => {
       const category = data.categories.find((c) => c.slug === data.product.category);
-      return `${category.label} · ${data.site.guarantees.map((g) => g.text).join(" · ")}`;
+      return `${category.label} · ${data.site.guarantees.filter((g) => !g.homeOnly).map((g) => g.text).join(" · ")}`;
     },
     // Use the product's own photo as the link preview when it has one
     ogImage: (data) => data.product.photos[0] || null,
@@ -78,7 +78,7 @@
         </div>
       </div>
 
-      <p class="detail-help">Parcelamento, entrega e garantia: veja <a href="/#como-comprar">como comprar</a>.</p>
+      <p class="detail-help">Pagamento, entrega e garantia: veja <a href="/#como-comprar">como comprar</a>.</p>
     </div>
   </article>
 

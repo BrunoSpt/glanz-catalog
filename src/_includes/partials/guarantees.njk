@@ -1,6 +1,9 @@
 {%- from "partials/icons.njk" import icon -%}
 <ul class="guarantees{% if guaranteesClass %} {{ guaranteesClass }}{% endif %}">
   {%- for g in site.guarantees %}
+  {#- product pages skip store-wide claims that may not apply to every piece ("homeOnly") #}
+  {%- if not (g.homeOnly and guaranteesClass == "guarantees-detail") %}
   <li>{{ icon(g.icon) }}<span>{{ g.text }}</span></li>
+  {%- endif %}
   {%- endfor %}
 </ul>

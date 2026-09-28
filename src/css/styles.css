@@ -68,9 +68,11 @@ button{font:inherit;color:inherit}
 /* ---------- header ---------- */
 .site-header{
   position:sticky;top:0;z-index:40;
-  background:rgba(255,251,246,.92);
-  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
-  border-bottom:1px solid var(--line);
+  /* same brand gradient used where product photos are still missing */
+  background:var(--brand-gradient);
+  border-bottom:1px solid rgba(135,38,21,.12);
+  /* separates the header from gradient placeholder cards scrolling underneath */
+  box-shadow:0 6px 18px rgba(135,38,21,.10);
 }
 .site-header .bar{
   display:flex;align-items:center;justify-content:space-between;
@@ -82,7 +84,7 @@ button{font:inherit;color:inherit}
 .brandmark .mark-icon{width:22px;height:22px;flex-shrink:0}
 .header-actions{display:flex;align-items:center;gap:6px}
 .back-link{
-  font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
+  font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--maroon);
   display:flex;align-items:center;gap:6px;padding:10px 4px;
 }
 .list-button{
@@ -92,7 +94,7 @@ button{font:inherit;color:inherit}
 .list-button .icon{width:23px;height:23px}
 .list-count{
   position:absolute;top:5px;right:3px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;
-  background:var(--orange);color:var(--maroon);font-size:11px;font-weight:600;line-height:18px;text-align:center;
+  background:var(--maroon);color:var(--white);font-size:11px;font-weight:600;line-height:18px;text-align:center;
 }
 
 /* ---------- category navigation ---------- */
@@ -470,7 +472,7 @@ dialog.is-fallback[open]{position:fixed;top:0;bottom:0;z-index:100}
 @media (hover:hover){
   .btn-primary:hover{background:#6f1f11}
   .btn-secondary:hover{border-color:var(--orange)}
-  .back-link:hover{color:var(--maroon)}
+  .back-link:hover{opacity:.7}
   .chip:not(.active):hover{border-color:var(--orange);color:var(--orange)}
   .category-circle:hover .label{color:var(--orange)}
   .btn-direct:hover{background:#6f1f11}
