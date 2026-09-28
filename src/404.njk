@@ -1,0 +1,21 @@
+---js
+{
+  layout: "layouts/base.njk",
+  permalink: "404.html",
+  eleventyExcludeFromCollections: true,
+  eleventyComputed: {
+    title: (data) => `Página não encontrada — ${data.site.name}`,
+    description: (data) => data.site.description,
+    // GitHub Pages serves this page for any missing path, even nested ones,
+    // so relative links must resolve against the site root (not needed on the local dev server)
+    baseHref: (data) => (data.eleventy.env.runMode === "serve" ? "" : data.site.url),
+  },
+}
+---
+  {% include "partials/category-chips.njk" %}
+
+  <section class="page-head container">
+    <p class="kicker">Erro 404</p>
+    <h1 class="serif">Página não encontrada</h1>
+    <p>O endereço pode ter mudado. Escolha uma categoria acima ou volte para o <a href="index.html"><u>catálogo</u></a>.</p>
+  </section>

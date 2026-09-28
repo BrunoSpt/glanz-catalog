@@ -1,0 +1,18 @@
+{
+  "name": "glanz-catalog",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mobile-first product catalog for a Brazilian jewelry store, built with Eleventy.",
+  "type": "module",
+  "scripts": {
+    "start": "eleventy --serve",
+    "build": "eleventy",
+    "validate": "node scripts/validate-data.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^3.1.6"
+  }
+}

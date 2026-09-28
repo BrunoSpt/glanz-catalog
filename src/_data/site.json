@@ -1,0 +1,17 @@
+{
+  "name": "GLANZ Semi Joias",
+  "url": "https://brunospt.github.io/glanz-catalog/",
+  "locale": "pt_BR",
+  "title": "GLANZ Semi Joias — Catálogo",
+  "description": "Catálogo digital GLANZ Semi Joias — anéis, brincos, colares, pulseiras e pingentes.",
+  "tagline": "Elegância que permanece, brilho que reluz",
+  "city": "Petrolina, PE",
+  "instagram": "glanz_semijoiaspnz",
+  "directMessage": "Olá! Tenho interesse na peça: ",
+  "ogImage": {
+    "path": "assets/brand/og-image.jpg",
+    "width": 1200,
+    "height": 630,
+    "alt": "Brinco GLANZ Semi Joias e logo da marca"
+  }
+}
