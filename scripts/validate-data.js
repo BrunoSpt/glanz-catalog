@@ -51,6 +51,9 @@ export function validateData() {
       }
     });
   }
+  if (!Array.isArray(policies.paymentMethods) || !policies.paymentMethods.length || !policies.paymentMethods.every((m) => typeof m === "string")) {
+    errors.push(`storePolicies.json: "paymentMethods" must be a list like ["Pix", "Cartão de crédito"]`);
+  }
   if (!Array.isArray(policies.delivery) || !policies.delivery.every((line) => typeof line === "string")) {
     errors.push(`storePolicies.json: "delivery" must be a list of sentences`);
   }

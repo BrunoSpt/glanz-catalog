@@ -6,7 +6,7 @@
   "description": "Catálogo digital GLANZ Semi Joias — anéis, brincos, colares, pulseiras e pingentes.",
   "tagline": "Elegância que permanece, brilho que reluz",
   "collection": {
-    "note": "Peças únicas · coleção renovada a cada 2 meses",
+    "note": "Peças únicas",
     "firstCycle": "2026-09",
     "months": 2
   },
@@ -24,6 +24,11 @@
     {
       "icon": "layers",
       "text": "Banho triplo em ouro 18k"
+    },
+    {
+      "icon": "gem",
+      "text": "Pedras em zircônia lapidadas",
+      "homeOnly": true
     },
     {
       "icon": "shield",

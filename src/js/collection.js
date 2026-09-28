@@ -15,17 +15,16 @@ export function currentCycle(today, firstCycle, months){
     .map(m => monthName(Math.floor(m / 12), m % 12));
 }
 
-// "coleção de setembro e outubro · renovada a cada 2 meses"
+// "coleção de setembro e outubro" (the months listed already make the renewal clear)
 export function collectionText(today, { firstCycle, months }){
-  const every = months === 1 ? 'todo mês' : `a cada ${months} meses`;
-  return `coleção de ${joinNames(currentCycle(today, firstCycle, months))} · renovada ${every}`;
+  return `coleção de ${joinNames(currentCycle(today, firstCycle, months))}`;
 }
 
 export function initCollectionNote(){
   const note = document.querySelector('[data-collection]');
   if(!note) return;
-  const { firstCycle, months, prefix } = note.dataset;
-  // Without JavaScript the generic note stays ("coleção renovada a cada 2 meses")
-  note.querySelector('[data-collection-text]').textContent =
-    `${prefix} · ${collectionText(new Date(), { firstCycle, months: Number(months) })}`;
+  const { firstCycle, months } = note.dataset;
+  // Without JavaScript only the note is shown ("Peças únicas")
+  const text = note.querySelector('[data-collection-text]');
+  text.textContent = `${text.textContent} · ${collectionText(new Date(), { firstCycle, months: Number(months) })}`;
 }
