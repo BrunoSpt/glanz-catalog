@@ -1,0 +1,27 @@
+---js
+{
+  layout: "layouts/base.njk",
+  permalink: "index.html",
+  headerLink: "instagram",
+  eleventyComputed: {
+    title: (data) => data.site.title,
+    description: (data) => data.site.description,
+  },
+}
+---
+  {% include "partials/category-chips.njk" %}
+
+  <section class="carousel-hero" aria-label="Destaques do catálogo">
+    <div class="track" id="heroTrack">
+      {%- for item in highlights %}
+      {%- if item.comingSoon %}
+      <div class="slide placeholder"><img src="assets/brand/sunburst.png" width="160" height="165" alt=""><span>{{ item.comingSoon }}</span></div>
+      {%- else %}
+      <div class="slide"><img src="{{ item.image }}" width="{{ item.width }}" height="{{ item.height }}" alt="{{ item.alt }}"><span class="caption">{{ item.caption }}</span></div>
+      {%- endif %}
+      {%- endfor %}
+    </div>
+    <div class="carousel-dots" id="heroDots"></div>
+  </section>
+
+  <p class="tagline-line serif">"{{ site.tagline }}"</p>

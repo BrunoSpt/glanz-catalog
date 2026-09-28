@@ -1,0 +1,31 @@
+---js
+{
+  layout: "layouts/base.njk",
+  pagination: { data: "categories", size: 1, alias: "category" },
+  permalink: (data) => `${data.category.slug}.html`,
+  eleventyComputed: {
+    title: (data) => `${data.category.label} — ${data.site.name}`,
+    description: (data) => data.category.description,
+  },
+}
+---
+{%- from "partials/product-card.njk" import productCard %}
+{%- set currentSlug = category.slug %}
+{%- set items = products | byCategory(category.slug) %}
+  {% include "partials/category-chips.njk" %}
+
+  <section class="page-head container">
+    <p class="kicker">Catálogo · {{ items | length }} {{ "peça" if items | length == 1 else "peças" }}</p>
+    <h1 class="serif">{{ category.label }}</h1>
+    <p>{{ category.description }}</p>
+  </section>
+
+  <section class="container">
+    <div class="product-grid">
+      {%- for product in items %}
+      {{ productCard(product, site.name) }}
+      {%- else %}
+      <p class="grid-message">Novas peças em breve.</p>
+      {%- endfor %}
+    </div>
+  </section>

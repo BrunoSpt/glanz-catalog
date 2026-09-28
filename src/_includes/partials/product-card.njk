@@ -1,0 +1,25 @@
+{% macro productCard(product, siteName) %}
+<article class="card">
+  <div class="carousel">
+    {%- if product.photos | length %}
+    {%- for photo in product.photos %}
+    <div class="slide">
+      {%- if loop.first and product.sample %}<span class="badge-demo">Exemplo</span>{% endif -%}
+      <img src="{{ photo }}" alt="{{ product.name }}{% if product.photos | length > 1 %} — foto {{ loop.index }}{% endif %} — {{ siteName }}" loading="lazy">
+    </div>
+    {%- endfor %}
+    {%- else %}
+    <div class="slide placeholder">
+      {%- if product.sample %}<span class="badge-demo">Exemplo</span>{% endif -%}
+      <img src="assets/brand/sunburst.png" width="160" height="165" alt=""><span>Foto em breve</span>
+    </div>
+    {%- endif %}
+  </div>
+  <div class="dots"></div>
+  <div class="info">
+    <p class="name serif">{{ product.name }}</p>
+    <p class="price">{{ product.price | brl }}</p>
+    <a class="ask" href="{{ product.name | directLink }}" data-message="{{ product.name | directMessage }}" target="_blank" rel="noopener">Perguntar no Direct →</a>
+  </div>
+</article>
+{% endmacro %}

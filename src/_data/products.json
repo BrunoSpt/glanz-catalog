@@ -1,0 +1,21 @@
+[
+  { "name": "Anel Solitário Zircônia", "category": "rings", "price": 59.90, "photos": [], "sample": true },
+  { "name": "Anel Trio Texturizado", "category": "rings", "price": 54.90, "photos": [], "sample": true },
+  { "name": "Anel Infinito", "category": "rings", "price": 47.90, "photos": [], "sample": true },
+
+  { "name": "Brinco Coração Cristal", "category": "earrings", "price": 49.90, "photos": ["assets/products/heart-earring.webp"] },
+  { "name": "Brinco Argola Trançada", "category": "earrings", "price": 39.90, "photos": [], "sample": true },
+  { "name": "Brinco Gota Zircônia", "category": "earrings", "price": 44.90, "photos": [], "sample": true },
+
+  { "name": "Colar Ponto de Luz", "category": "necklaces", "price": 64.90, "photos": [], "sample": true },
+  { "name": "Colar Veneziana", "category": "necklaces", "price": 58.90, "photos": [], "sample": true },
+  { "name": "Colar Coração Duplo", "category": "necklaces", "price": 52.90, "photos": [], "sample": true },
+
+  { "name": "Pulseira Riviera", "category": "bracelets", "price": 69.90, "photos": [], "sample": true },
+  { "name": "Pulseira Elos Finos", "category": "bracelets", "price": 42.90, "photos": [], "sample": true },
+  { "name": "Pulseira Tênis Zircônia", "category": "bracelets", "price": 74.90, "photos": [], "sample": true },
+
+  { "name": "Pingente Gota de Luz", "category": "pendants", "price": 38.90, "photos": [], "sample": true },
+  { "name": "Pingente Estrela", "category": "pendants", "price": 34.90, "photos": [], "sample": true },
+  { "name": "Pingente Coração Vazado", "category": "pendants", "price": 36.90, "photos": [], "sample": true }
+]
