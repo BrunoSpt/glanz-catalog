@@ -12,12 +12,18 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Static site generated with [Eleventy](https://www.11ty.dev/):** one shared layout and one category template generate every page, so header, navigation and metadata live in a single place.
 - **Data-driven catalog:** products, categories, home highlights and site settings are JSON files in `src/_data/`. Product cards are rendered at build time, so pages show the catalog immediately without waiting for JavaScript.
 - **Data validation:** every build checks the catalog data (JSON syntax, unknown fields, categories, prices, missing photos) and fails with a clear message, locally and in CI.
-- **Instagram Direct integration:** each card opens a Direct chat with the store and a pre-written message naming the piece. Instagram doesn't always honor pre-filled text, so the message is also copied to the clipboard, with a toast telling the customer to paste it.
-- **Carousels:** home highlights with autoplay that pauses on interaction; swipeable photo carousels on product cards.
+- **Product pages:** every product gets its own shareable page (`/products/<name>/`) with a photo gallery, full-screen zoom, store guarantees, related products and a share button (native share sheet on phones, copy link elsewhere).
+- **Interest list:** customers heart the pieces they like and send the whole list in a single Instagram Direct message. Stored in `localStorage` on the customer's device; no backend.
+- **Instagram Direct integration:** each product opens a Direct chat with a pre-written message naming the piece and linking to its page. Instagram doesn't always honor pre-filled text, so the message is also copied to the clipboard, with a toast telling the customer to paste it.
+- **Badges:** "Novidade", "Mais vendido", "Promoção" (with the original price struck through) and "Esgotado", driven by product fields.
+- **Home page:** category shortcuts styled like Instagram story highlights, highlights carousel, guarantees, "Novidades" and "Mais vendidos" sections and a "Como comprar" guide.
+- **Carousels:** home highlights with autoplay that pauses on interaction (one slide per view on phones, several on desktop); swipeable photo carousels on product cards.
+- **Responsive layout:** two-column grid on phones, three on tablets and four on desktop; product pages switch to a two-column layout on larger screens.
 - **Link previews:** Open Graph tags and a 1200×630 share image on every page.
 - **Performance:** WebP images, explicit image dimensions to avoid layout shift, small vanilla JS modules and no runtime dependencies.
 - **Accessibility:** respects `prefers-reduced-motion`, semantic navigation with `aria-current`, alt text on product photos.
-- **Continuous deployment:** GitHub Actions builds and deploys to GitHub Pages on every push to `main`; pull requests are built and validated without deploying.
+- **End-to-end tests:** Playwright runs the production build on iPhone-sized WebKit (Safari's engine, including the narrowest 375px screen) and desktop Chromium, covering every page, the interest list, photo zoom and Instagram Direct links. Expectations are derived from the catalog data.
+- **Continuous deployment:** GitHub Actions builds, tests and deploys to GitHub Pages on every push to `main`; pull requests are built and tested without deploying. A failing test blocks the deploy.
 
 ## Project structure
 
@@ -28,24 +34,38 @@ src/
     categories.json        Category slug, label and description
     products.json          Products
     highlights.json        Home carousel slides
+    howToBuy.json          "Como comprar" steps
   _includes/
     layouts/base.njk       Shared page layout (<head>, header, footer)
     partials/
-      category-chips.njk   Category navigation
-      product-card.njk     Product card macro
+      category-chips.njk   Category navigation (chips)
+      category-circles.njk Home category shortcuts
+      guarantees.njk       Store guarantees list
+      icons.njk            Inline SVG icons
+      product-card.njk     Product card, badges, price and button macros
   index.njk                Home page
   category.njk             One template → one page per category (rings.html, earrings.html…)
+  product.njk              One template → one page per product (products/<slug>/)
   404.njk                  Not found page
   css/styles.css
   js/
     main.js                Entry point
-    carousel.js            Card and home carousels
-    direct-message.js      Copy-to-clipboard for Instagram Direct buttons
+    carousel.js            Card, gallery and home carousels
+    interest-list.js       Interest list (localStorage + drawer)
+    lightbox.js            Full-screen photo zoom
+    share.js               Share button
+    direct-message.js      Copy-to-clipboard for Instagram Direct links
+    clipboard.js           Clipboard helper
     toast.js               Toast notification
   assets/
     brand/                 Logo, icons, favicon, share image
     products/              Product photos (WebP)
+lib/slugify.js             Product name → URL slug (shared by build and validation)
 scripts/validate-data.js   Catalog data validation (runs before every build)
+tests/
+  e2e/catalog.spec.js      End-to-end tests (Playwright)
+  serve-site.js            Serves _site/ like GitHub Pages for the tests
+playwright.config.js       Test projects: iPhone 17, narrow iPhone, desktop Chrome
 docs/                      Store owner's guide (pt-BR)
 .github/workflows/         Build and deploy pipeline
 eleventy.config.js         Eleventy configuration and template filters
@@ -65,9 +85,28 @@ eleventy.config.js         Eleventy configuration and template filters
 | `category` | A `slug` from `categories.json`: `rings`, `earrings`, `necklaces`, `bracelets` or `pendants`. |
 | `price`    | Number in BRL, rendered as `R$ 49,90`. |
 | `photos`   | Image paths relative to `src/`. More than one turns the card into a swipeable carousel; empty shows a placeholder. |
+| `compareAtPrice` | Optional. Original price, greater than `price`; shows the "Promoção" badge and strikes it through. |
+| `isNew`    | Optional. `true` shows "Novidade" and lists the product under "Novidades" on the home page. |
+| `bestseller` | Optional. `true` shows "Mais vendido" and lists the product under "Mais vendidos". |
+| `soldOut`  | Optional. `true` shows "Esgotado". |
 | `sample`   | Optional. `true` shows an "Exemplo" badge for demo items. |
 
-Adding a category only requires a new entry in `categories.json`; its page is generated automatically.
+Product page URLs are derived from the name (`Brinco Coração Cristal` → `/products/brinco-coracao-cristal/`), so names must be unique; the validation enforces it.
+
+Adding a category only requires a new entry in `categories.json` (an optional `image` shows in its home shortcut); its page is generated automatically.
+
+Store-wide guarantees shown on product pages and the home page live in `site.json` (`guarantees`).
+
+## Browser support
+
+Current Chrome, Edge, Firefox and Safari, with special care for **iPhone (iOS Safari 15+)**, the store's main audience:
+
+- `<dialog>` is used where supported, with a small fallback for iOS < 15.4 (`js/dialog.js`).
+- Prefixed properties for Safari (`-webkit-backdrop-filter`, `-webkit-user-select`) and `vh` fallbacks for `dvh`.
+- Hover styles only apply on devices that can hover (no "stuck" hover after a tap on iPhone).
+- The browser's blue tap highlight is replaced by the brand's own press feedback.
+- Photo zoom handles iOS pinch gestures itself, so the page doesn't zoom behind the viewer.
+- Copy-to-clipboard selects text the way iOS requires, including inside open dialogs.
 
 ## Development
 
@@ -75,13 +114,16 @@ Requires Node.js 20 or newer.
 
 ```bash
 npm install
-npm start          # dev server with live reload at http://localhost:8080
+npm start          # dev server with live reload at http://localhost:8080/glanz-catalog/
 npm run build      # production build into _site/
 npm run validate   # check the catalog data only
+
+npm run test:install   # once: download the WebKit and Chromium test browsers
+npm test               # build, serve and run the end-to-end tests
 ```
 
 ## Deployment
 
-The workflow in `.github/workflows/deploy.yml` builds the site and publishes `_site/` to GitHub Pages on every push to `main` (repository **Settings → Pages → Source: GitHub Actions**).
+The workflow in `.github/workflows/deploy.yml` builds and tests the site, then publishes `_site/` to GitHub Pages on every push to `main` (repository **Settings → Pages → Source: GitHub Actions**). If a test fails, nothing is deployed and the Playwright report is attached to the run.
 
-The site URL is set once in `src/_data/site.json` (`url`), which is used to build the absolute URLs required by Open Graph tags.
+The site URL is set once in `src/_data/site.json` (`url`). It drives the absolute URLs required by Open Graph tags and the path prefix (`/glanz-catalog/`) that Eleventy's HTML base plugin adds to every internal link.

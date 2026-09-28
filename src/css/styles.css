@@ -1,6 +1,7 @@
 /* ===========================================================
    GLANZ SEMI JOIAS — shared stylesheet
    Official brand palette: orange #FFAD62 · marsala #872615 · sky blue #C6F4FF
+   Mobile-first; breakpoints at 700px (tablet) and 1000px (desktop)
    =========================================================== */
 
 :root{
@@ -13,10 +14,19 @@
   --line:#F0DDCC;
   --white:#FFFFFF;
   --shadow: 0 18px 46px rgba(135,38,21,.10);
+  --radius:20px;
+  --gutter:clamp(18px,4vw,40px);
+  --brand-gradient:linear-gradient(155deg,var(--sky),var(--orange));
 }
 
+/* ---------- base ---------- */
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
+html{
+  scroll-behavior:smooth;
+  /* remove the browser's blue tap flash on phones; taps get the brand's own feedback below */
+  -webkit-tap-highlight-color:transparent;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%; /* iOS: no font inflation in landscape */
+}
 body{
   margin:0;
   background:var(--paper);
@@ -29,39 +39,66 @@ body{
 .serif{font-family:'Playfair Display',Georgia,serif}
 img{max-width:100%;height:auto;display:block}
 a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit}
 ::selection{background:var(--sky);color:var(--maroon)}
+:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
 
-/* ---------- layout helpers ---------- */
-.container{max-width:1080px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+.container{max-width:1080px;margin:0 auto;padding:0 var(--gutter)}
+
+.icon{width:18px;height:18px;flex-shrink:0}
+.icon-inline{width:15px;height:15px;display:inline-block;vertical-align:-2px}
+
+/* ---------- buttons ---------- */
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:7px;
+  min-height:44px;padding:10px 18px;border-radius:999px;border:1px solid transparent;
+  font-size:13px;font-weight:500;letter-spacing:.02em;line-height:1.2;text-align:center;
+  cursor:pointer;transition:background .15s ease,color .15s ease,border-color .15s ease;
+}
+.btn .icon{width:17px;height:17px}
+.btn-primary{background:var(--maroon);color:var(--white)}
+.btn-secondary{background:var(--white);color:var(--maroon);border-color:var(--line)}
+.btn-block{width:100%}
+.icon-button{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:40px;height:40px;border-radius:50%;border:0;background:transparent;cursor:pointer;
+}
+.icon-button .icon{width:22px;height:22px}
 
 /* ---------- header ---------- */
 .site-header{
   position:sticky;top:0;z-index:40;
   background:rgba(255,251,246,.92);
-  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
   border-bottom:1px solid var(--line);
 }
 .site-header .bar{
   display:flex;align-items:center;justify-content:space-between;
-  padding:12px clamp(18px,4vw,40px);
+  padding:8px var(--gutter);
   max-width:1080px;margin:0 auto;
 }
 .brandmark{display:flex;align-items:center;gap:10px}
 .brandmark .word{font-family:'Playfair Display',serif;font-size:19px;letter-spacing:.04em;color:var(--maroon)}
+.brandmark .mark-icon{width:22px;height:22px;flex-shrink:0}
+.header-actions{display:flex;align-items:center;gap:6px}
 .back-link{
   font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);
-  display:flex;align-items:center;gap:6px;
+  display:flex;align-items:center;gap:6px;padding:10px 4px;
 }
-.back-link:hover{color:var(--maroon)}
+.list-button{
+  position:relative;display:inline-flex;align-items:center;justify-content:center;
+  width:44px;height:44px;border:0;background:transparent;color:var(--maroon);cursor:pointer;
+}
+.list-button .icon{width:23px;height:23px}
+.list-count{
+  position:absolute;top:5px;right:3px;min-width:18px;height:18px;padding:0 5px;border-radius:999px;
+  background:var(--orange);color:var(--maroon);font-size:11px;font-weight:600;line-height:18px;text-align:center;
+}
 
-/* ---------- sunburst accent ---------- */
-.sunburst{width:30px;height:30px;color:var(--orange)}
-.brandmark .mark-icon{width:22px;height:22px;flex-shrink:0}
-
-/* ---------- category chip row (home) ---------- */
+/* ---------- category navigation ---------- */
 .chip-row{
   display:flex;gap:9px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;
-  padding:14px clamp(18px,4vw,28px) 2px;
+  padding:14px var(--gutter) 2px;max-width:1080px;margin:0 auto;
 }
 .chip-row::-webkit-scrollbar{display:none}
 .chip{
@@ -69,10 +106,27 @@ a{color:inherit;text-decoration:none}
   font-size:12.8px;color:var(--maroon);white-space:nowrap;background:var(--white);
   transition:.15s ease;
 }
-.chip:hover,.chip:active{border-color:var(--orange);color:var(--orange)}
+.chip:active{border-color:var(--orange);color:var(--orange)}
 .chip.active{background:var(--maroon);border-color:var(--maroon);color:var(--white)}
 
-/* ---------- autoplay product carousel (home) ---------- */
+/* home: circles styled like Instagram story highlights */
+.category-circles{
+  display:flex;gap:16px;overflow-x:auto;scrollbar-width:none;
+  padding:16px var(--gutter) 6px;max-width:1080px;margin:0 auto;
+}
+.category-circles::-webkit-scrollbar{display:none}
+.category-circle{flex:0 0 auto;display:flex;flex-direction:column;align-items:center;gap:7px;width:72px}
+.category-circle .circle{
+  width:66px;height:66px;border-radius:50%;padding:3px;
+  background:linear-gradient(135deg,var(--orange),var(--maroon));
+}
+.category-circle .circle img{
+  width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--paper);background:var(--paper);
+}
+.category-circle .circle-placeholder img{object-fit:contain;padding:14px;background:var(--brand-gradient)}
+.category-circle .label{font-size:12px;color:var(--maroon)}
+
+/* ---------- home highlights carousel ---------- */
 .carousel-hero{margin-top:8px;position:relative}
 .carousel-hero .track{
   display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
@@ -82,7 +136,7 @@ a{color:inherit;text-decoration:none}
 .carousel-hero .slide{flex:0 0 100%;scroll-snap-align:start;aspect-ratio:4/5;position:relative;background:var(--line)}
 .carousel-hero .slide img{width:100%;height:100%;object-fit:cover;display:block}
 .carousel-hero .slide.placeholder{
-  background:linear-gradient(155deg,var(--sky),var(--orange));
+  background:var(--brand-gradient);
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
 }
 .carousel-hero .slide.placeholder img{width:58px;height:auto;opacity:.8}
@@ -95,40 +149,50 @@ a{color:inherit;text-decoration:none}
 .carousel-dots span{width:6px;height:6px;border-radius:50%;background:var(--line);transition:.25s ease}
 .carousel-dots span.active{background:var(--orange);width:16px;border-radius:4px}
 
-.tagline-line{text-align:center;padding:22px 24px 6px;font-style:italic;font-size:15px;color:var(--muted)}
+/* ---------- guarantees ---------- */
+.guarantees{list-style:none;margin:0;padding:0}
+.guarantees li{display:flex;align-items:center;gap:10px;color:var(--maroon);font-size:13px}
+.guarantees .icon{width:22px;height:22px;color:var(--orange)}
 
-/* ---------- footer mark (home) ---------- */
-.site-footer .mark{width:120px;margin:0 auto 10px}
-/* ---------- desktop: keep the mobile-first proportions ---------- */
-@media(min-width:680px){
-  .site-header .bar,
-  .chip-row,
-  .carousel-hero,
-  .tagline-line,
-  .page-head,
-  .product-grid{
-    max-width:480px;margin-left:auto;margin-right:auto;
-  }
-  .carousel-hero{box-shadow:0 24px 60px rgba(135,38,21,.14)}
+/* home strip: three columns */
+.section-tight{padding-top:22px;padding-bottom:4px}
+.guarantees:not(.guarantees-detail){
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+  background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px 10px;
+}
+.guarantees:not(.guarantees-detail) li{flex-direction:column;text-align:center;gap:7px;font-size:11.5px;line-height:1.3}
+
+/* product page: stacked list right below the price */
+.guarantees-detail{
+  display:grid;gap:10px;margin:18px 0 22px;padding:16px 0;
+  border-top:1px solid var(--line);border-bottom:1px solid var(--line);
 }
 
+/* ---------- sections ---------- */
+.home-section{padding-top:clamp(28px,5vw,44px)}
+.section-title{font-size:clamp(22px,3.6vw,28px);font-weight:500;color:var(--maroon);margin:0}
+.home-section .product-grid{padding-bottom:0}
 
-
-/* ---------- category page ---------- */
-.page-head{padding:clamp(26px,5vw,40px) 0 clamp(10px,2vw,16px);text-align:center}
-.page-head .kicker{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.page-head{padding:clamp(26px,5vw,40px) var(--gutter) clamp(10px,2vw,16px);text-align:center}
+.kicker{font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 8px}
 .page-head h1{font-size:clamp(26px,4.4vw,36px);font-weight:500;color:var(--maroon);margin:0 0 8px}
 .page-head p{font-size:14px;color:var(--muted);max-width:420px;margin:0 auto}
 
+.tagline-line{text-align:center;padding:36px 24px 10px;font-style:italic;font-size:15px;color:var(--muted)}
+
+/* ---------- product grid & cards ---------- */
 .product-grid{
   display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(14px,2.4vw,26px);
-  padding:clamp(24px,4vw,36px) 0 clamp(60px,8vw,90px);
+  padding:clamp(20px,4vw,32px) 0 clamp(60px,8vw,90px);
 }
+.grid-message{grid-column:1/-1;text-align:center;font-size:14px;color:var(--muted);margin:10px 0}
 
-.card{background:var(--white);border-radius:20px 20px 14px 14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.card{background:var(--white);border-radius:var(--radius) var(--radius) 14px 14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.card-media{position:relative}
+
 .carousel{
   display:flex;overflow-x:auto;scroll-snap-type:x mandatory;
-  aspect-ratio:4/5;background:linear-gradient(155deg,var(--sky),var(--orange));
+  aspect-ratio:4/5;background:var(--brand-gradient);
   -webkit-overflow-scrolling:touch;scrollbar-width:none;
 }
 .carousel::-webkit-scrollbar{display:none}
@@ -136,42 +200,196 @@ a{color:inherit;text-decoration:none}
 .carousel .slide img{width:100%;height:100%;object-fit:cover}
 .carousel .slide.placeholder{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
 .carousel .slide.placeholder img{width:40px;height:auto;opacity:.8}
-.carousel .slide.placeholder span:not(.badge-demo){font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--maroon);opacity:.6}
+.carousel .slide.placeholder span{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--maroon);opacity:.6}
 
 .dots{display:flex;justify-content:center;gap:5px;padding:9px 0 0}
+.dots:empty{display:none}
 .dots span{width:5px;height:5px;border-radius:50%;background:var(--line);transition:.25s ease}
 .dots span.active{background:var(--orange);width:13px;border-radius:4px}
 
-.card .info{padding:13px 14px 16px}
-.card .name{font-family:'Playfair Display',serif;font-size:14.5px;color:var(--maroon);line-height:1.3;margin:0 0 4px}
-.card .price{font-size:13px;font-weight:600;color:var(--muted);margin:0 0 10px}
-.card .ask{
-  display:inline-flex;align-items:center;gap:5px;font-size:11px;letter-spacing:.04em;
-  text-transform:uppercase;color:var(--maroon);border-top:1px solid var(--line);padding-top:10px;
+.badges{position:absolute;top:8px;left:8px;display:flex;flex-direction:column;align-items:flex-start;gap:4px;pointer-events:none}
+.badge{
+  font-size:9px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:999px;background:var(--white);color:var(--maroon);
 }
-.card .ask:hover{color:var(--orange)}
-.badge-demo{
-  position:absolute;top:8px;left:8px;background:rgba(135,38,21,.85);color:#fff;
-  font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:999px;
+.badge-sample{background:rgba(135,38,21,.85);color:#fff}
+.badge-sold-out{background:#5b4a45;color:#fff}
+.badge-sale{background:var(--maroon);color:#fff}
+.badge-new{background:var(--sky);color:var(--maroon)}
+.badge-bestseller{background:var(--orange);color:var(--maroon)}
+
+.list-toggle{
+  position:absolute;top:8px;right:8px;
+  width:36px;height:36px;border-radius:50%;border:0;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.92);color:var(--maroon);box-shadow:0 4px 12px rgba(135,38,21,.15);
 }
-.grid-message{grid-column:1/-1;text-align:center;font-size:14px;color:var(--muted);margin:10px 0}
+.list-toggle .icon{width:19px;height:19px}
+[data-list-toggle][aria-pressed="true"] .icon{fill:var(--maroon)}
+
+.card .info{padding:12px 14px 14px;display:flex;flex-direction:column;flex:1}
+.card .name{font-family:'Playfair Display',serif;font-size:14.5px;font-weight:500;color:var(--maroon);line-height:1.3;margin:0 0 4px}
+.price{margin:0 0 12px;color:var(--muted);font-size:13px;font-weight:600}
+.price-old{font-weight:400;opacity:.75;margin-right:4px}
+.card .price .price-current{color:var(--maroon)}
+.btn-direct{
+  margin-top:auto;width:100%;min-height:44px;padding:8px 10px;gap:6px;
+  background:var(--maroon);color:var(--white);font-size:12px;
+}
+.btn-direct .icon{width:15px;height:15px}
+.card .btn-direct{white-space:nowrap;padding:8px 6px;font-size:11.5px}
+/* two narrow columns on phones: drop the icon so the label fits on one line */
+@media (max-width:440px){.card .btn-direct .icon{display:none}}
+
+.is-sold-out .carousel img:not([width]){filter:grayscale(.5);opacity:.7}
+
+/* photos fade in once loaded; the brand gradient shows meanwhile.
+   Fallback: revealed after 3s even if the load event never arrives */
+@media (prefers-reduced-motion: no-preference){
+  .js .carousel .slide:not(.placeholder) img,
+  .js .carousel-hero .slide:not(.placeholder) img{transition:opacity .4s ease}
+  /* hide only while not loaded (a separate "loaded" rule would lose on specificity) */
+  .js .carousel .slide:not(.placeholder) img:not(.is-loaded),
+  .js .carousel-hero .slide:not(.placeholder) img:not(.is-loaded){opacity:0;animation:reveal 0s 3s forwards}
+}
+@keyframes reveal{to{opacity:1}}
+
+/* ---------- product page ---------- */
+.breadcrumb{font-size:12px;color:var(--muted);padding-top:14px;display:flex;flex-wrap:wrap;gap:6px}
+.breadcrumb [aria-current]{color:var(--maroon)}
+
+.product-detail{display:grid;gap:22px;padding-top:14px}
+.gallery-main{position:relative;border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)}
+.gallery-zoom{display:block;width:100%;height:100%;padding:0;border:0;background:none;cursor:pointer}
+.zoom-hint{
+  position:absolute;right:10px;bottom:10px;display:flex;align-items:center;gap:5px;
+  padding:6px 10px;border-radius:999px;background:rgba(255,255,255,.9);color:var(--maroon);font-size:11px;pointer-events:none;
+}
+.zoom-hint .icon{width:14px;height:14px}
+
+.detail-info h1{font-size:clamp(26px,4.4vw,34px);font-weight:500;line-height:1.15;color:var(--maroon);margin:0 0 10px}
+.detail-info .price{font-size:20px;margin:0}
+.detail-info .price .price-current{color:var(--maroon)}
+.detail-info .price-old{font-size:15px}
+.stock-note{margin:10px 0 0;font-size:13px;color:var(--muted)}
+.detail-actions{display:grid;gap:10px}
+.detail-actions-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.direct-note{margin:-2px 0 4px;text-align:center;font-size:11.5px;color:var(--muted)}
+.list-toggle-button[aria-pressed="true"]{border-color:var(--maroon)}
+.detail-help{font-size:13px;color:var(--muted);margin:18px 0 0}
+.detail-help a{color:var(--maroon);text-decoration:underline}
+
+/* ---------- lightbox (full-screen photo, pinch / wheel zoom) ---------- */
+.lightbox{
+  width:100vw;height:100vh;height:100dvh;max-width:none;max-height:none;margin:0;padding:0;border:0;
+  background:rgba(24,10,6,.96);color:#fff;
+}
+.lightbox::backdrop{background:rgba(24,10,6,.7)}
+.lightbox-stage{
+  position:absolute;top:0;right:0;bottom:0;left:0;overflow:hidden;display:flex;align-items:center;justify-content:center;
+  touch-action:none; /* gestures are handled by js/lightbox.js instead of zooming the whole page */
+}
+.lightbox-image{
+  max-width:100%;max-height:100%;object-fit:contain;
+  transform-origin:0 0;will-change:transform;-webkit-user-select:none;user-select:none;-webkit-user-drag:none;-webkit-touch-callout:none;
+}
+.lightbox-stage.is-zoomed{cursor:grab}
+.lightbox-stage.is-zoomed:active{cursor:grabbing}
+/* dark round buttons stay visible over light photos when zoomed in */
+.lightbox .icon-button{position:absolute;z-index:2;background:rgba(24,10,6,.6);color:#fff;width:44px;height:44px}
+.lightbox-close{top:calc(12px + env(safe-area-inset-top,0px));right:12px}
+.lightbox-nav{top:50%;transform:translateY(-50%)}
+.lightbox-prev{left:10px}
+.lightbox-next{right:10px}
+.lightbox-hint{position:absolute;left:0;right:0;bottom:calc(14px + env(safe-area-inset-bottom,0px));margin:0;padding:0 16px;text-align:center;font-size:12px;opacity:.7;pointer-events:none}
+.lightbox-stage.is-zoomed ~ .lightbox-hint{display:none}
+.lightbox-zoom{
+  position:absolute;z-index:2;left:50%;bottom:calc(44px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  display:flex;gap:10px;
+}
+.lightbox .lightbox-zoom .icon-button{position:static}
+/* touch screens pinch; mouse users get the wheel and the +/- buttons */
+.lightbox-hint-mouse,.lightbox-zoom{display:none}
+@media (hover:hover) and (pointer:fine){
+  .lightbox-hint-touch{display:none}
+  .lightbox-hint-mouse{display:block}
+  .lightbox-zoom{display:flex}
+}
+
+/* ---------- dialogs (interest list, photo viewer) ---------- */
+dialog:not([open]){display:none}
+/* dialogs focus their content on open (not the first button, which Safari would ring on a tap) */
+.drawer-panel:focus,.lightbox-stage:focus{outline:none}
+/* the page behind an open dialog must not scroll (iOS scrolls it otherwise) */
+html:has(dialog[open]),html.dialog-open{overflow:hidden}
+/* fallback for browsers without <dialog> support (see js/dialog.js) */
+dialog.is-fallback[open]{position:fixed;top:0;bottom:0;z-index:100}
+.drawer.is-fallback[open]{right:0}
+.lightbox.is-fallback[open]{left:0}
+
+/* ---------- interest list drawer ---------- */
+.drawer{
+  margin:0 0 0 auto;width:min(420px,92vw);height:100vh;height:100dvh;max-height:none;padding:0;border:0;
+  background:var(--paper);color:var(--ink);box-shadow:-18px 0 46px rgba(135,38,21,.18);
+}
+.drawer::backdrop{background:rgba(60,20,10,.35)}
+.drawer[open]{animation:drawer-in .25s ease}
+@keyframes drawer-in{from{transform:translateX(30px);opacity:0}}
+.drawer-panel{display:flex;flex-direction:column;height:100%}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:16px 14px 12px 20px;border-bottom:1px solid var(--line)}
+.drawer-head h2{font-size:20px;font-weight:500;margin:0;color:var(--maroon)}
+.drawer-items{list-style:none;margin:0;padding:8px 20px;overflow-y:auto;flex:1;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.drawer-item{display:grid;grid-template-columns:56px 1fr auto;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--line)}
+.drawer-thumb{width:56px;height:70px;border-radius:10px;object-fit:cover;background:var(--brand-gradient)}
+.drawer-thumb.placeholder{object-fit:contain;padding:16px}
+.drawer-item a{font-family:'Playfair Display',serif;font-size:14.5px;color:var(--maroon);line-height:1.3}
+.drawer-item .item-price{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+.drawer-empty{padding:24px 20px;font-size:14px;color:var(--muted);line-height:1.5}
+.drawer-foot{padding:14px 20px calc(18px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);display:grid;gap:8px}
+.drawer-note{margin:0;text-align:center;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.drawer-label{font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.list-message{
+  width:100%;resize:none;border:1px solid var(--line);border-radius:12px;background:var(--white);
+  padding:10px 12px;font:inherit;font-size:16px;line-height:1.45;color:var(--ink); /* 16px: iOS zooms into smaller fields */
+  -webkit-user-select:text;user-select:text;
+}
+.step-badge{
+  display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;border-radius:50%;
+  font-size:11px;font-weight:600;background:var(--sky);color:var(--maroon);
+}
+.btn-primary .step-badge{background:rgba(255,255,255,.2);color:var(--white)}
+[data-list-copy].is-done{border-color:var(--maroon);background:var(--sky)}
+
+/* ---------- how to buy ---------- */
+.how-to-buy{padding-bottom:10px}
+.steps{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:12px}
+.step{display:flex;gap:14px;align-items:flex-start;background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px}
+.step-number{
+  flex-shrink:0;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  background:var(--sky);color:var(--maroon);font-size:17px;
+}
+.step h3{margin:2px 0 4px;font-size:15px;font-weight:600;color:var(--maroon)}
+.step p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.5}
+.how-to-buy-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.how-to-buy-actions .btn{flex:1 1 180px}
 
 /* ---------- footer ---------- */
-.site-footer{border-top:1px solid var(--line);padding:26px 0 calc(26px + env(safe-area-inset-bottom,0px));text-align:center}
-.site-footer .word{font-family:'Playfair Display',serif;font-size:16px;color:var(--maroon);margin-bottom:4px}
+.site-footer{border-top:1px solid var(--line);margin-top:40px;padding:26px 0 calc(90px + env(safe-area-inset-bottom,0px));text-align:center}
+.site-footer .mark{width:120px;margin:0 auto 10px}
 .site-footer p{font-size:11.5px;color:var(--muted);margin:2px 0}
+.site-footer a{text-decoration:underline}
 
 /* ---------- floating Instagram bubble ---------- */
 .ig-float{
   position:fixed;right:18px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:50;
   width:56px;height:56px;border-radius:50%;
-  background:var(--maroon);
+  background:var(--maroon);color:#fff;
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 10px 26px rgba(135,38,21,.35);
 }
-.ig-float svg{width:26px;height:26px;color:#fff}
+.ig-float .icon{width:26px;height:26px}
 .ig-float::after{
-  content:'';position:absolute;inset:-6px;border-radius:50%;
+  content:'';position:absolute;top:-6px;right:-6px;bottom:-6px;left:-6px;border-radius:50%;
   border:1.5px solid var(--maroon);opacity:.45;
   animation:pulse 2.6s ease-out infinite;
 }
@@ -181,7 +399,7 @@ a{color:inherit;text-decoration:none}
   100%{opacity:0}
 }
 
-/* ---------- "message copied" toast ---------- */
+/* ---------- toast ---------- */
 .toast{
   position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:60;
   transform:translate(-50%,12px);opacity:0;pointer-events:none;
@@ -190,6 +408,51 @@ a{color:inherit;text-decoration:none}
   transition:opacity .2s ease,transform .2s ease;
 }
 .toast.show{opacity:1;transform:translate(-50%,0)}
+/* inside the interest list the buttons sit at the bottom, so show the toast at the top */
+.drawer .toast{bottom:auto;top:calc(76px + env(safe-area-inset-top,0px))}
+
+/* ---------- tablet & desktop ---------- */
+@media (min-width:700px){
+  .product-grid{grid-template-columns:repeat(3,1fr)}
+  .steps{grid-template-columns:repeat(3,1fr)}
+  .step{flex-direction:column}
+  .guarantees:not(.guarantees-detail){padding:20px}
+  .guarantees:not(.guarantees-detail) li{flex-direction:row;justify-content:center;text-align:left;font-size:13px}
+  .category-circles{justify-content:center;gap:28px}
+  .category-circle{width:88px}
+  .category-circle .circle{width:80px;height:80px}
+
+  /* highlights: several photos side by side instead of one full-width slide */
+  .carousel-hero{max-width:1080px;margin:14px auto 0;padding:0 var(--gutter)}
+  .carousel-hero .track{gap:14px}
+  .carousel-hero .slide{flex-basis:calc((100% - 14px) / 2);border-radius:var(--radius);overflow:hidden}
+}
+@media (min-width:820px){
+  .product-detail{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:48px;align-items:start}
+  .detail-info{position:sticky;top:84px;padding-top:8px}
+}
+@media (min-width:1000px){
+  .product-grid{grid-template-columns:repeat(4,1fr)}
+  .carousel-hero .slide{flex-basis:calc((100% - 28px) / 3)}
+}
+
+/* ---------- hover (mouse only: on iPhone a tapped element would stay "hovered") ---------- */
+@media (hover:hover){
+  .btn-primary:hover{background:#6f1f11}
+  .btn-secondary:hover{border-color:var(--orange)}
+  .back-link:hover{color:var(--maroon)}
+  .chip:not(.active):hover{border-color:var(--orange);color:var(--orange)}
+  .category-circle:hover .label{color:var(--orange)}
+  .btn-direct:hover{background:#6f1f11}
+  .breadcrumb a:hover{color:var(--maroon)}
+}
+
+/* ---------- tap feedback (replaces the browser's blue tap highlight) ---------- */
+.btn,.chip,.icon-button,.list-button,.list-toggle,.category-circle .circle,.gallery-zoom{transition:transform .12s ease,background .15s ease,color .15s ease,border-color .15s ease}
+.btn:active,.chip:active,.icon-button:active,.list-button:active,.list-toggle:active{transform:scale(.95)}
+.category-circle:active .circle{transform:scale(.94)}
+.ig-float:active{transform:scale(.94)}
+.lightbox .lightbox-nav:active{transform:translateY(-50%) scale(.95)}
 
 /* ---------- users who enabled "reduce motion": no animations ---------- */
 @media (prefers-reduced-motion: reduce){

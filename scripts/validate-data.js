@@ -4,12 +4,14 @@
 import { readFileSync, existsSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
+import { slugify } from "../lib/slugify.js";
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src");
 const DATA = path.join(SRC, "_data");
 
-const PRODUCT_FIELDS = new Set(["name", "category", "price", "photos", "sample"]);
+const PRODUCT_FIELDS = new Set(["name", "category", "price", "compareAtPrice", "photos", "sample", "isNew", "bestseller", "soldOut"]);
+const BOOLEAN_FIELDS = ["sample", "isNew", "bestseller", "soldOut"];
 
 function readJson(file, errors) {
   const fullPath = path.join(DATA, file);
@@ -36,10 +38,12 @@ export function validateData() {
     if (!c.slug || !c.label) errors.push(`categories.json #${i + 1}: "slug" and "label" are required`);
     if (slugs.has(c.slug)) errors.push(`categories.json: duplicate slug "${c.slug}"`);
     slugs.add(c.slug);
+    if (c.image && !existsSync(path.join(SRC, c.image))) errors.push(`categories.json ("${c.slug}"): image not found "src/${c.image}"`);
   });
 
   if (!Array.isArray(products)) return [...errors, "products.json: must be a list of products"];
 
+  const productSlugs = new Map();
   products.forEach((p, i) => {
     const where = `products.json #${i + 1}${p.name ? ` ("${p.name}")` : ""}`;
     for (const key of Object.keys(p)) {
@@ -55,7 +59,18 @@ export function validateData() {
         if (!existsSync(path.join(SRC, photo))) errors.push(`${where}: photo not found "src/${photo}"`);
       });
     }
-    if ("sample" in p && typeof p.sample !== "boolean") errors.push(`${where}: "sample" must be true or false`);
+    for (const key of BOOLEAN_FIELDS) {
+      if (key in p && typeof p[key] !== "boolean") errors.push(`${where}: "${key}" must be true or false`);
+    }
+    if ("compareAtPrice" in p && !(typeof p.compareAtPrice === "number" && p.compareAtPrice > p.price)) {
+      errors.push(`${where}: "compareAtPrice" (original price) must be a number greater than "price"`);
+    }
+    // Each product gets its own page at /products/<slug>/, so names must be unique
+    if (typeof p.name === "string") {
+      const slug = slugify(p.name);
+      if (productSlugs.has(slug)) errors.push(`${where}: same page address as product #${productSlugs.get(slug)} — use a different name`);
+      else productSlugs.set(slug, i + 1);
+    }
   });
 
   return errors;

@@ -9,19 +9,60 @@
   },
 }
 ---
-  {% include "partials/category-chips.njk" %}
+{%- from "partials/product-card.njk" import productCard %}
+{%- from "partials/icons.njk" import icon %}
+  {% include "partials/category-circles.njk" %}
 
   <section class="carousel-hero" aria-label="Destaques do catálogo">
     <div class="track" id="heroTrack">
       {%- for item in highlights %}
       {%- if item.comingSoon %}
-      <div class="slide placeholder"><img src="assets/brand/sunburst.png" width="160" height="165" alt=""><span>{{ item.comingSoon }}</span></div>
+      <div class="slide placeholder"><img src="/assets/brand/sunburst.png" width="160" height="165" alt=""><span>{{ item.comingSoon }}</span></div>
       {%- else %}
-      <div class="slide"><img src="{{ item.image }}" width="{{ item.width }}" height="{{ item.height }}" alt="{{ item.alt }}"><span class="caption">{{ item.caption }}</span></div>
+      <div class="slide"><img src="/{{ item.image }}" width="{{ item.width }}" height="{{ item.height }}" alt="{{ item.alt }}"><span class="caption">{{ item.caption }}</span></div>
       {%- endif %}
       {%- endfor %}
     </div>
     <div class="carousel-dots" id="heroDots"></div>
+  </section>
+
+  <section class="container section-tight" aria-label="Garantias">
+    {% include "partials/guarantees.njk" %}
+  </section>
+
+  {%- for section in [
+    { "id": "novidades", "title": "Novidades", "items": products | flagged("isNew") },
+    { "id": "mais-vendidos", "title": "Mais vendidos", "items": products | flagged("bestseller") }
+  ] %}
+  {%- if section.items | length %}
+  <section class="container home-section" aria-labelledby="{{ section.id }}">
+    <h2 class="section-title serif" id="{{ section.id }}">{{ section.title }}</h2>
+    <div class="product-grid">
+      {%- for product in section.items %}
+      {{ productCard(product, site.name) }}
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}
+  {%- endfor %}
+
+  <section class="container home-section how-to-buy" id="como-comprar" aria-labelledby="como-comprar-title">
+    <h2 class="section-title serif" id="como-comprar-title">Como comprar</h2>
+    <ol class="steps">
+      {%- for step in howToBuy %}
+      <li class="step">
+        <span class="step-number serif">{{ loop.index }}</span>
+        <div>
+          <h3>{{ step.title }}</h3>
+          <p>{{ step.text }}</p>
+        </div>
+      </li>
+      {%- endfor %}
+    </ol>
+    <div class="how-to-buy-actions">
+      <button class="btn btn-secondary" type="button" data-list-open>{{ icon("heart") }} Ver minha lista</button>
+      <a class="btn btn-primary" href="{{ '' | directLink }}" target="_blank" rel="noopener">{{ icon("instagram") }} Falar no Direct</a>
+    </div>
   </section>
 
   <p class="tagline-line serif">"{{ site.tagline }}"</p>

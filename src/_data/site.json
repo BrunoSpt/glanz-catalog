@@ -13,5 +13,20 @@
     "width": 1200,
     "height": 630,
     "alt": "Brinco GLANZ Semi Joias e logo da marca"
-  }
+  },
+  "listMessage": "Olá! Tenho interesse nestas peças:",
+  "guarantees": [
+    {
+      "icon": "layers",
+      "text": "Banho triplo em ouro 18k"
+    },
+    {
+      "icon": "gem",
+      "text": "Joias em zircônia"
+    },
+    {
+      "icon": "shield",
+      "text": "2 anos de garantia pelo fabricante"
+    }
+  ]
 }

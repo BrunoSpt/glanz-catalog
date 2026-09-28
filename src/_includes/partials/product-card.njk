@@ -1,25 +1,67 @@
-{% macro productCard(product, siteName) %}
-<article class="card">
-  <div class="carousel">
-    {%- if product.photos | length %}
-    {%- for photo in product.photos %}
-    <div class="slide">
-      {%- if loop.first and product.sample %}<span class="badge-demo">Exemplo</span>{% endif -%}
-      <img src="{{ photo }}" alt="{{ product.name }}{% if product.photos | length > 1 %} — foto {{ loop.index }}{% endif %} — {{ siteName }}" loading="lazy">
-    </div>
-    {%- endfor %}
-    {%- else %}
-    <div class="slide placeholder">
-      {%- if product.sample %}<span class="badge-demo">Exemplo</span>{% endif -%}
-      <img src="assets/brand/sunburst.png" width="160" height="165" alt=""><span>Foto em breve</span>
-    </div>
-    {%- endif %}
+{%- from "partials/icons.njk" import icon -%}
+
+{#- Status badges; "Esgotado" and "Promoção" are derived from soldOut / compareAtPrice -#}
+{%- macro badges(product) -%}
+{%- set items = [] -%}
+{%- if product.sample %}{% set items = items.concat([{ "label": "Exemplo", "kind": "sample" }]) %}{% endif -%}
+{%- if product.soldOut %}{% set items = items.concat([{ "label": "Esgotado", "kind": "sold-out" }]) %}{% endif -%}
+{%- if product.compareAtPrice %}{% set items = items.concat([{ "label": "Promoção", "kind": "sale" }]) %}{% endif -%}
+{%- if product.isNew %}{% set items = items.concat([{ "label": "Novidade", "kind": "new" }]) %}{% endif -%}
+{%- if product.bestseller %}{% set items = items.concat([{ "label": "Mais vendido", "kind": "bestseller" }]) %}{% endif -%}
+{%- if items | length %}
+<div class="badges">
+  {%- for b in items %}<span class="badge badge-{{ b.kind }}">{{ b.label }}</span>{% endfor %}
+</div>
+{%- endif -%}
+{%- endmacro -%}
+
+{%- macro price(product) -%}
+<p class="price">
+  {%- if product.compareAtPrice %}<s class="price-old" aria-label="Preço anterior">{{ product.compareAtPrice | brl }}</s> {% endif -%}
+  <span class="price-current">{{ product.price | brl }}</span>
+</p>
+{%- endmacro -%}
+
+{#- Heart button; the data-* attributes are what js/interest-list.js stores -#}
+{%- macro listToggle(product, className = "list-toggle", withLabel = false) -%}
+<button class="{{ className }}" type="button" aria-pressed="false" aria-label="Adicionar {{ product.name }} à lista de interesse"
+  data-list-toggle
+  data-id="{{ product | productSlug }}"
+  data-name="{{ product.name }}"
+  data-price="{{ product.price | brl }}"
+  data-url="{{ product | productUrl | withBase }}"
+  data-image="{{ (product.photos[0] | withBase) if product.photos | length else '' }}">
+  {{- icon("heart") -}}
+  {%- if withLabel %}<span class="toggle-label">Adicionar à lista</span>{% endif -%}
+</button>
+{%- endmacro -%}
+
+{%- macro directButton(product, label = "Perguntar no Direct", className = "btn btn-direct") -%}
+{%- set message = product | directMessage -%}
+<a class="{{ className }}" href="{{ message | directLink }}" data-message="{{ message }}" target="_blank" rel="noopener">{{ icon("instagram") }} {{ label }}</a>
+{%- endmacro -%}
+
+{%- macro productCard(product, siteName) -%}
+{%- set url = product | productUrl -%}
+<article class="card{% if product.soldOut %} is-sold-out{% endif %}">
+  <div class="card-media">
+    <a class="carousel" href="{{ url }}" aria-label="Ver detalhes: {{ product.name }}">
+      {%- if product.photos | length %}
+      {%- for photo in product.photos %}
+      <div class="slide"><img src="/{{ photo }}" alt="{{ product.name }}{% if product.photos | length > 1 %} — foto {{ loop.index }}{% endif %} — {{ siteName }}" loading="lazy"></div>
+      {%- endfor %}
+      {%- else %}
+      <div class="slide placeholder"><img src="/assets/brand/sunburst.png" width="160" height="165" alt=""><span>Foto em breve</span></div>
+      {%- endif %}
+    </a>
+    {{ badges(product) }}
+    {{ listToggle(product) }}
   </div>
   <div class="dots"></div>
   <div class="info">
-    <p class="name serif">{{ product.name }}</p>
-    <p class="price">{{ product.price | brl }}</p>
-    <a class="ask" href="{{ product.name | directLink }}" data-message="{{ product.name | directMessage }}" target="_blank" rel="noopener">Perguntar no Direct →</a>
+    <h3 class="name serif"><a href="{{ url }}">{{ product.name }}</a></h3>
+    {{ price(product) }}
+    {{ directButton(product) }}
   </div>
 </article>
-{% endmacro %}
+{%- endmacro -%}
