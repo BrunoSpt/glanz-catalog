@@ -2,7 +2,7 @@
 
 Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrolina, Brazil. Customers browse pieces by category and ask about any item through Instagram Direct with one tap.
 
-**Live site:** https://brunospt.github.io/projeto-catalago-semijoias/
+**Live site:** https://brunospt.github.io/glanz-catalog/
 
 > The codebase is in English; the user interface is in Brazilian Portuguese (pt-BR), the store's language.
 > The store owner's guide (in Portuguese) is at [`docs/store-guide.pt-BR.md`](docs/store-guide.pt-BR.md).
@@ -62,4 +62,4 @@ Then open http://localhost:8765.
 
 ## Deployment
 
-GitHub Pages serves the `main` branch root. Open Graph tags need absolute URLs and currently point to `https://brunospt.github.io/projeto-catalago-semijoias/`; update `og:url` and `og:image` on every page if the site moves to another domain.
+GitHub Pages serves the `main` branch root. Open Graph tags need absolute URLs and currently point to `https://brunospt.github.io/glanz-catalog/`; update `og:url` and `og:image` on every page if the site moves to another domain.
