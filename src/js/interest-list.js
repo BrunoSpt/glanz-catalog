@@ -1,0 +1,161 @@
+// Interest list: customers mark pieces with the heart button and send them all
+// in one Instagram Direct message. Stored only on the customer's device (localStorage).
+import { copyText } from './clipboard.js';
+import { openDialog, closeDialog } from './dialog.js';
+import { showToast } from './toast.js';
+
+const STORAGE_KEY = 'glanz:interest-list';
+
+function load(){
+  try {
+    const items = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return Array.isArray(items) ? items : [];
+  } catch(e) {
+    return []; // storage blocked (private mode) or corrupted
+  }
+}
+
+function save(items){
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch(e) { /* list still works for this visit */ }
+}
+
+function el(tag, className, text){
+  const node = document.createElement(tag);
+  if(className) node.className = className;
+  if(text != null) node.textContent = text;
+  return node;
+}
+
+export function initInterestList(){
+  const dialog = document.getElementById('interestList');
+  if(!dialog) return;
+
+  const { instagram, listMessage, placeholderImage } = document.body.dataset;
+  const listEl = dialog.querySelector('[data-list-items]');
+  const emptyEl = dialog.querySelector('[data-list-empty]');
+  const footEl = dialog.querySelector('[data-list-foot]');
+  const sendLink = dialog.querySelector('[data-list-send]');
+  const messageBox = dialog.querySelector('[data-list-message-box]');
+  const copyButton = dialog.querySelector('[data-list-copy]');
+  const copyLabel = dialog.querySelector('[data-list-copy-label]');
+  const removeIcon = dialog.querySelector('[data-list-close] svg');
+
+  let items = load();
+  const has = (id) => items.some(item => item.id === id);
+
+  function buildMessage(){
+    const lines = items.map(item => `• ${item.name} (${item.price})`);
+    return [listMessage, ...lines].join('\n');
+  }
+
+  function renderItem(item){
+    const li = el('li', 'drawer-item');
+    const thumb = el('img', 'drawer-thumb' + (item.image ? '' : ' placeholder'));
+    thumb.src = item.image || placeholderImage;
+    thumb.alt = '';
+    const text = el('div');
+    const link = el('a', null, item.name);
+    link.href = item.url;
+    text.append(link, el('span', 'item-price', item.price));
+    const remove = el('button', 'icon-button');
+    remove.type = 'button';
+    remove.setAttribute('aria-label', `Remover ${item.name} da lista`);
+    remove.append(removeIcon.cloneNode(true));
+    remove.addEventListener('click', () => toggle(item));
+    li.append(thumb, text, remove);
+    return li;
+  }
+
+  function render(){
+    // header counters
+    document.querySelectorAll('[data-list-count]').forEach(count => {
+      count.textContent = items.length;
+      count.hidden = items.length === 0;
+    });
+    document.querySelectorAll('[data-list-open]').forEach(button => {
+      if(button.classList.contains('list-button')){
+        button.setAttribute('aria-label', `Abrir lista de interesse (${items.length} ${items.length === 1 ? 'peça' : 'peças'})`);
+      }
+    });
+    // heart buttons
+    document.querySelectorAll('[data-list-toggle]').forEach(button => {
+      const inList = has(button.dataset.id);
+      button.setAttribute('aria-pressed', String(inList));
+      button.setAttribute('aria-label', `${inList ? 'Remover' : 'Adicionar'} ${button.dataset.name} ${inList ? 'da' : 'à'} lista de interesse`);
+      const label = button.querySelector('.toggle-label');
+      if(label) label.textContent = inList ? 'Na sua lista' : 'Adicionar à lista';
+    });
+    // drawer
+    listEl.replaceChildren(...items.map(renderItem));
+    emptyEl.hidden = items.length > 0;
+    footEl.hidden = items.length === 0;
+    const message = buildMessage();
+    messageBox.value = message;
+    messageBox.rows = Math.min(6, items.length + 1);
+    setCopied(false);
+    sendLink.dataset.message = message;
+    sendLink.href = `https://ig.me/m/${instagram}?text=${encodeURIComponent(message)}`;
+  }
+
+  function setCopied(copied){
+    copyButton.classList.toggle('is-done', copied);
+    copyLabel.textContent = copied ? 'Lista copiada' : 'Copiar lista';
+  }
+
+  // Step 1 of sending: copy the message, with visible confirmation
+  copyButton.addEventListener('click', () => {
+    copyText(messageBox.value)
+      .then(() => {
+        setCopied(true);
+        showToast('Lista copiada — agora abra o Direct e cole');
+      })
+      .catch(() => {
+        // Leave the text selected so the customer can copy it by hand
+        messageBox.focus();
+        messageBox.select();
+        messageBox.setSelectionRange(0, messageBox.value.length);
+        showToast('Não deu para copiar — segure o dedo no texto');
+      });
+  });
+
+  function toggle(item){
+    if(has(item.id)){
+      items = items.filter(i => i.id !== item.id);
+      showToast('Removida da sua lista');
+    } else {
+      items = [...items, item];
+      showToast('Adicionada à sua lista');
+    }
+    save(items);
+    render();
+  }
+
+  document.querySelectorAll('[data-list-toggle]').forEach(button => {
+    button.addEventListener('click', (event) => {
+      event.preventDefault();
+      const { id, name, price, url, image } = button.dataset;
+      toggle({ id, name, price, url, image });
+    });
+  });
+
+  document.querySelectorAll('[data-list-open]').forEach(button => {
+    button.addEventListener('click', () => openDialog(dialog));
+  });
+  dialog.querySelectorAll('[data-list-close]').forEach(button => {
+    button.addEventListener('click', () => closeDialog(dialog));
+  });
+  // click on the dimmed backdrop closes the drawer
+  dialog.addEventListener('click', (event) => {
+    if(event.target === dialog) closeDialog(dialog);
+  });
+
+  // keep several open tabs in sync
+  window.addEventListener('storage', (event) => {
+    if(event.key === STORAGE_KEY){
+      items = load();
+      render();
+    }
+  });
+
+  render();
+}

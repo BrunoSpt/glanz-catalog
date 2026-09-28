@@ -1,0 +1,107 @@
+---js
+{
+  layout: "layouts/base.njk",
+  pagination: { data: "products", size: 1, alias: "product" },
+  permalink: "{{ product | productUrl }}index.html",
+  ogType: "product",
+  eleventyComputed: {
+    title: (data) => `${data.product.name} — ${data.site.name}`,
+    description: (data) => {
+      const category = data.categories.find((c) => c.slug === data.product.category);
+      return `${category.label} · ${data.site.guarantees.map((g) => g.text).join(" · ")}`;
+    },
+    // Use the product's own photo as the link preview when it has one
+    ogImage: (data) => data.product.photos[0] || null,
+  },
+}
+---
+{%- from "partials/product-card.njk" import productCard, badges, price, listToggle, directButton %}
+{%- from "partials/icons.njk" import icon %}
+{%- set category = categories | categoryOf(product.category) %}
+{%- set currentSlug = category.slug %}
+{%- set relatedItems = products | related(product) %}
+  {% include "partials/category-chips.njk" %}
+
+  <nav class="breadcrumb container" aria-label="Você está em">
+    <a href="/">Catálogo</a> <span aria-hidden="true">›</span>
+    <a href="/{{ category.slug }}.html">{{ category.label }}</a> <span aria-hidden="true">›</span>
+    <span aria-current="page">{{ product.name }}</span>
+  </nav>
+
+  <article class="product-detail container{% if product.soldOut %} is-sold-out{% endif %}">
+    <div class="gallery" data-gallery>
+      <div class="gallery-main">
+        <div class="carousel gallery-track">
+          {%- if product.photos | length %}
+          {%- for photo in product.photos %}
+          <div class="slide">
+            <button class="gallery-zoom" type="button" data-zoom-index="{{ loop.index0 }}" aria-label="Ver foto {{ loop.index }} em tela cheia">
+              <img src="/{{ photo }}" alt="{{ product.name }}{% if product.photos | length > 1 %} — foto {{ loop.index }}{% endif %} — {{ site.name }}"{% if not loop.first %} loading="lazy"{% endif %}>
+            </button>
+          </div>
+          {%- endfor %}
+          {%- else %}
+          <div class="slide placeholder"><img src="/assets/brand/sunburst.png" width="160" height="165" alt=""><span>Foto em breve</span></div>
+          {%- endif %}
+        </div>
+        {{ badges(product) }}
+        {%- if product.photos | length %}
+        <span class="zoom-hint" aria-hidden="true">{{ icon("zoom") }} Ver em tela cheia</span>
+        {%- endif %}
+      </div>
+      <div class="dots"></div>
+    </div>
+
+    <div class="detail-info">
+      <p class="kicker">{{ category.label }}</p>
+      <h1 class="serif">{{ product.name }}</h1>
+      {{ price(product) }}
+      {%- if product.soldOut %}
+      <p class="stock-note">Esgotada no momento — pergunte no Direct sobre a reposição.</p>
+      {%- endif %}
+
+      {%- set guaranteesClass = "guarantees-detail" %}
+      {% include "partials/guarantees.njk" %}
+
+      <div class="detail-actions">
+        {{ directButton(product, "Perguntar no Direct", "btn btn-primary btn-block") }}
+        <p class="direct-note">Ao tocar, a mensagem é copiada. Se o Direct abrir sem ela, é só colar.</p>
+        <div class="detail-actions-row">
+          {{ listToggle(product, "btn btn-secondary list-toggle-button", true) }}
+          <button class="btn btn-secondary" type="button" data-share data-share-title="{{ product.name }} — {{ site.name }}" data-share-url="{{ page.url | absoluteUrl }}">{{ icon("share") }} Compartilhar</button>
+        </div>
+      </div>
+
+      <p class="detail-help">Dúvidas sobre pagamento e entrega? Veja <a href="/#como-comprar">como comprar</a>.</p>
+    </div>
+  </article>
+
+  {%- if product.photos | length %}
+  <dialog class="lightbox" data-lightbox aria-label="Fotos ampliadas de {{ product.name }}">
+    <button class="icon-button lightbox-close" type="button" data-lightbox-close aria-label="Fechar">{{ icon("close") }}</button>
+    <div class="lightbox-stage" data-lightbox-stage tabindex="-1" autofocus>
+      <img class="lightbox-image" data-lightbox-image src="/{{ product.photos[0] }}" alt="" loading="lazy">
+    </div>
+    {%- if product.photos | length > 1 %}
+    <button class="icon-button lightbox-nav lightbox-prev" type="button" data-lightbox-prev aria-label="Foto anterior">{{ icon("chevron-left") }}</button>
+    <button class="icon-button lightbox-nav lightbox-next" type="button" data-lightbox-next aria-label="Próxima foto">{{ icon("chevron-right") }}</button>
+    {%- endif %}
+    <div class="lightbox-zoom" aria-label="Zoom">
+      <button class="icon-button" type="button" data-zoom-out aria-label="Afastar">{{ icon("minus") }}</button>
+      <button class="icon-button" type="button" data-zoom-in aria-label="Aproximar">{{ icon("plus") }}</button>
+    </div>
+    <p class="lightbox-hint lightbox-hint-touch">Use dois dedos para aproximar</p>
+    <p class="lightbox-hint lightbox-hint-mouse">Use a roda do mouse ou os botões + e − para aproximar · arraste para mover</p>
+  </dialog>
+  {%- endif %}
+
+  {%- if relatedItems | length %}
+  <section class="container home-section" aria-labelledby="related-title">
+    <h2 class="section-title serif" id="related-title">Você também pode gostar</h2>
+    <div class="product-grid">
+      {%- for item in relatedItems %}
+      {{ productCard(item, site.name) }}
+      {%- endfor %}
+    </div>
+  </section>
+  {%- endif %}

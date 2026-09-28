@@ -7,12 +7,15 @@
   "scripts": {
     "start": "eleventy --serve",
     "build": "eleventy",
-    "validate": "node scripts/validate-data.js"
+    "validate": "node scripts/validate-data.js",
+    "test": "playwright test",
+    "test:install": "playwright install webkit chromium"
   },
   "engines": {
     "node": ">=20"
   },
   "devDependencies": {
-    "@11ty/eleventy": "^3.1.6"
+    "@11ty/eleventy": "^3.1.6",
+    "@playwright/test": "^1.63.0"
   }
 }

@@ -32,6 +32,18 @@ jobs:
       # Also validates src/_data (see scripts/validate-data.js); a data mistake fails here
       - run: npm run build
 
+      # End-to-end tests on iPhone (WebKit, Safari's engine) and desktop (Chromium);
+      # a failure here stops the deploy
+      - run: npx playwright install --with-deps webkit chromium
+      - run: npm test
+
+      - uses: actions/upload-artifact@v7
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
+
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request'
         with:

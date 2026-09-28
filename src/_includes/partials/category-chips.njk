@@ -1,6 +1,6 @@
 <nav class="chip-row" aria-label="Categorias">
   {%- for c in categories %}
   {%- set isCurrent = currentSlug == c.slug %}
-  <a class="chip{% if isCurrent %} active{% endif %}" href="{{ c.slug }}.html"{% if isCurrent %} aria-current="page"{% endif %}>{{ c.label }}</a>
+  <a class="chip{% if isCurrent %} active{% endif %}" href="/{{ c.slug }}.html"{% if isCurrent %} aria-current="page"{% endif %}>{{ c.label }}</a>
   {%- endfor %}
 </nav>

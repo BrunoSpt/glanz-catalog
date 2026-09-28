@@ -1,0 +1,15 @@
+{#- Home category navigation, styled like Instagram story highlights -#}
+<nav class="category-circles" aria-label="Categorias">
+  {%- for c in categories %}
+  <a class="category-circle" href="/{{ c.slug }}.html">
+    <span class="circle{% if not c.image %} circle-placeholder{% endif %}">
+      {%- if c.image %}
+      <img src="/{{ c.image }}" alt="" loading="lazy">
+      {%- else %}
+      <img src="/assets/brand/sunburst.png" width="160" height="165" alt="">
+      {%- endif %}
+    </span>
+    <span class="label">{{ c.label }}</span>
+  </a>
+  {%- endfor %}
+</nav>

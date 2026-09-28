@@ -1,6 +1,6 @@
 [
   { "slug": "rings", "label": "Anéis", "description": "Peças para todos os estilos, do minimalista ao statement." },
-  { "slug": "earrings", "label": "Brincos", "description": "Do delicado ao statement, para todos os momentos." },
+  { "slug": "earrings", "label": "Brincos", "image": "assets/products/heart-earring.webp", "description": "Do delicado ao statement, para todos os momentos." },
   { "slug": "necklaces", "label": "Colares", "description": "Camadas de brilho para compor o seu look." },
   { "slug": "bracelets", "label": "Pulseiras", "description": "Do fino ao statement, para usar sozinha ou combinada." },
   { "slug": "pendants", "label": "Pingentes", "description": "Pequenos detalhes que fazem toda a diferença." }

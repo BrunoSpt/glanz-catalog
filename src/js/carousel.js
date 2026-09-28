@@ -28,20 +28,36 @@ export function initCardCarousel(card){
   slides.forEach(slide => observer.observe(slide));
 }
 
-// Home highlights: autoplay that pauses while the user interacts
+// Home highlights: autoplay that pauses while the user interacts.
+// One slide per view on phones; two or three side by side on larger screens (see CSS).
 export function initHeroCarousel(track, dotsWrap){
-  const slides = track.querySelectorAll('.slide');
-  const dots = createDots(dotsWrap, slides.length);
+  const slides = Array.from(track.querySelectorAll('.slide'));
 
   let index = 0;
   let paused = false;
   let resumeTimer = null;
+  let dots = [];
+  let positions = 1; // how many different scroll positions exist
 
-  function goTo(i){
-    index = (i + slides.length) % slides.length;
-    track.scrollTo({ left: index * track.clientWidth, behavior: 'smooth' });
+  const step = () => slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth;
+
+  function layout(){
+    const visible = Math.max(1, Math.round(track.clientWidth / step()));
+    positions = Math.max(1, slides.length - visible + 1);
+    dotsWrap.replaceChildren();
+    dots = createDots(dotsWrap, positions);
+    index = Math.min(index, positions - 1);
     setActiveDot(dots, index);
   }
+
+  function goTo(i){
+    index = (i + positions) % positions;
+    track.scrollTo({ left: index * step(), behavior: 'smooth' });
+    setActiveDot(dots, index);
+  }
+
+  layout();
+  window.addEventListener('resize', layout);
 
   // No automatic slide changes for users who enabled "reduce motion"
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -57,7 +73,7 @@ export function initHeroCarousel(track, dotsWrap){
     clearTimeout(resumeTimer);
   });
   track.addEventListener('scroll', () => {
-    index = Math.round(track.scrollLeft / track.clientWidth);
+    index = Math.min(positions - 1, Math.round(track.scrollLeft / step()));
     setActiveDot(dots, index);
     clearTimeout(resumeTimer);
     resumeTimer = setTimeout(() => { paused = false; }, 4000);

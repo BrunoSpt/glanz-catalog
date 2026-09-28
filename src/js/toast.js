@@ -9,8 +9,12 @@ export function showToast(text){
     toast.className = 'toast';
     toast.id = 'toast';
     toast.setAttribute('role', 'status');
-    document.body.appendChild(toast);
   }
+  // An open modal <dialog> (interest list, photo zoom) sits in the browser's top layer,
+  // above everything else in the page, so the toast must live inside it to be seen
+  const host = document.querySelector('dialog[open]') || document.body;
+  if(toast.parentElement !== host) host.appendChild(toast);
+
   toast.textContent = text;
   toast.classList.add('show');
   clearTimeout(toastTimer);
