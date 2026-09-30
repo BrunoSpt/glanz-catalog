@@ -7,6 +7,7 @@ import { initInterestList } from './interest-list.js';
 import { initLightbox } from './lightbox.js';
 import { initNotFound } from './not-found.js';
 import { initCollectionNote } from './collection.js';
+import { initSearch } from './search.js';
 import { initShareButtons } from './share.js';
 
 // iOS Safari only applies :active styles on touch when a touch listener exists
@@ -36,3 +37,4 @@ initLightbox();
 initShareButtons();
 initNotFound();
 initCollectionNote();
+initSearch();

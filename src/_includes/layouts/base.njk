@@ -47,6 +47,7 @@
       {%- else %}
       <a class="back-link" href="/">← Catálogo</a>
       {%- endif %}
+      <button class="search-button" type="button" data-search-open aria-label="Buscar peças">{{ icon("search") }}</button>
       <button class="list-button" type="button" data-list-open aria-label="Abrir lista de interesse">
         {{ icon("heart") }}<span class="list-count" data-list-count hidden>0</span>
       </button>
@@ -67,6 +68,29 @@
 <a class="ig-float" href="{{ '' | directLink }}" target="_blank" rel="noopener" aria-label="Falar no Instagram Direct">
   {{ icon("instagram") }}
 </a>
+
+{#- Search: js/search.js filters the catalog index below as the customer types #}
+<dialog class="search-dialog" id="search" aria-labelledby="searchTitle">
+  <div class="search-panel">
+    <div class="search-head">
+      <h2 class="visually-hidden" id="searchTitle">Buscar peças</h2>
+      <label class="search-field">
+        {{ icon("search") }}
+        <span class="visually-hidden">Buscar peças</span>
+        <input type="search" data-search-input placeholder="Buscar peças: anel, coração, zircônia…" autocomplete="off" enterkeyhint="search" autofocus>
+      </label>
+      <button class="icon-button" type="button" data-search-close aria-label="Fechar busca">{{ icon("close") }}</button>
+    </div>
+    <p class="search-status" data-search-status aria-live="polite"></p>
+    <ul class="search-results" data-search-results></ul>
+    <div class="search-empty" data-search-empty hidden>
+      <p>Que tal ver por categoria?</p>
+      <nav class="search-categories" aria-label="Categorias">
+        {%- for c in categories %}<a class="chip" href="/{{ c.slug }}.html">{{ c.label }}</a>{% endfor %}
+      </nav>
+    </div>
+  </div>
+</dialog>
 
 {#- Interest list: filled by js/interest-list.js from localStorage #}
 <dialog class="drawer" id="interestList" aria-labelledby="interestListTitle">

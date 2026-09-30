@@ -13,6 +13,7 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Data-driven catalog:** products, categories, home highlights and site settings are JSON files in `src/_data/`. Product cards are rendered at build time, so pages show the catalog immediately without waiting for JavaScript.
 - **Data validation:** every build checks the catalog data (JSON syntax, unknown fields, categories, prices, missing photos) and fails with a clear message, locally and in CI.
 - **Product pages:** every product gets its own shareable page (`/products/<name>/`) with a photo gallery, full-screen zoom, store guarantees, related products and a share button (native share sheet on phones, copy link elsewhere).
+- **Search:** a magnifier in the header (and a search shortcut on the home page) opens instant search over the current collection, embedded in every page at build time — no server. Accent- and case-insensitive, matches name and category, lists available pieces first and marks sold ones.
 - **Interest list:** customers heart the pieces they like and send the whole list in a single Instagram Direct message. Stored in `localStorage` on the customer's device; no backend.
 - **Instagram Direct integration:** each product opens a Direct chat with a pre-written message naming the piece and linking to its page. Instagram doesn't always honor pre-filled text, so the message is also copied to the clipboard, with a toast telling the customer to paste it.
 - **Unique pieces, rotating collection:** every piece is one of a kind and the collection is replaced every two months. Sold pieces stay visible as "Vendida" (listed last, can't be added to the list); interest lists saved on customers' phones automatically drop pieces that were sold or left the collection; links to past pieces land on a "piece no longer available" page that shows what is available now; the home page shows the current collection ("coleção de setembro e outubro"), worked out in the browser from the date, so it rolls over every two months with no manual update.
@@ -57,6 +58,7 @@ src/
     interest-list.js       Interest list (localStorage + drawer)
     lightbox.js            Full-screen photo zoom
     share.js               Share button
+    search.js              Instant product search
     collection.js          Current collection cycle notice
     installments.js        Installment rules (also used by the build)
     not-found.js           "Piece no longer available" message on the 404 page

@@ -13,6 +13,11 @@
 {%- from "partials/icons.njk" import icon %}
   {% include "partials/category-circles.njk" %}
 
+  {#- Looks like a search field; opens the same search panel as the header magnifier #}
+  <div class="search-shortcut-wrap">
+    <button class="search-shortcut" type="button" data-search-open>{{ icon("search") }} <span>Buscar peças</span></button>
+  </div>
+
   {#- Pieces are unique and the collection is replaced every 2 months #}
   {#- js/collection.js replaces the generic note with the current cycle ("coleção de setembro e outubro…") #}
   <p class="collection-note" data-collection

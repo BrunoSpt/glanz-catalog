@@ -4,10 +4,19 @@
 
 const supportsDialog = typeof HTMLDialogElement === 'function' && 'showModal' in HTMLDialogElement.prototype;
 
+let escapeListenerAdded = false;
+
 export function openDialog(dialog){
   if(supportsDialog){
     dialog.showModal();
     return;
+  }
+  // Escape closes the fallback too (the native dialog already does this)
+  if(!escapeListenerAdded){
+    document.addEventListener('keydown', (event) => {
+      if(event.key === 'Escape') document.querySelectorAll('dialog[open]').forEach(closeDialog);
+    });
+    escapeListenerAdded = true;
   }
   dialog.classList.add('is-fallback');
   dialog.setAttribute('open', '');
@@ -23,12 +32,4 @@ export function closeDialog(dialog){
   document.documentElement.classList.remove('dialog-open');
   // the native dialog fires "close"; keep listeners working in the fallback
   dialog.dispatchEvent(new Event('close'));
-}
-
-// Escape closes the fallback too (the native dialog already does this)
-if(!supportsDialog){
-  document.addEventListener('keydown', (event) => {
-    if(event.key !== 'Escape') return;
-    document.querySelectorAll('dialog[open]').forEach(closeDialog);
-  });
 }

@@ -5,6 +5,7 @@ import { readFileSync } from "node:fs";
 import { slugify } from "../../lib/slugify.js";
 import { installmentPlan } from "../../src/js/installments.js";
 import { collectionText } from "../../src/js/collection.js";
+import { searchCatalog } from "../../src/js/search.js";
 
 const data = (file) => JSON.parse(readFileSync(`src/_data/${file}`, "utf8"));
 const site = data("site.json");
@@ -296,4 +297,51 @@ test("a saved interest list drops pieces that were sold or left the collection",
   const message = await drawer.locator("[data-list-message-box]").inputValue();
   expect(normalizeSpaces(message)).toContain(normalizeSpaces(`${kept.name} (${brl(kept.price)})`));
   expect(message).not.toContain("Peça antiga");
+});
+
+// Same entries the site searches: name + category label, available pieces first
+const searchEntries = [...products.filter((p) => !p.soldOut), ...products.filter((p) => p.soldOut)].map((p) => ({
+  name: p.name,
+  category: categories.find((c) => c.slug === p.category).label,
+  soldOut: !!p.soldOut,
+}));
+
+test("search finds pieces ignoring accents, from the header on any page", async ({ page }) => {
+  await page.goto(`${categories[0].slug}.html`);
+  await page.getByRole("button", { name: "Buscar peças" }).click();
+  const dialog = page.locator("#search");
+  const input = dialog.locator("[data-search-input]");
+  await expect(input).toBeFocused();
+
+  // a word from a real product name, typed without accents and in capitals
+  const word = productWithPhoto.name.split(" ").at(-1);
+  const query = word.normalize("NFD").replace(/[̀-ͯ]/g, "").toUpperCase();
+  await input.fill(query);
+  const expected = searchCatalog(searchEntries, query);
+  await expect(dialog.locator(".search-result")).toHaveCount(expected.length);
+  await expect(dialog.locator(".search-result").first()).toContainText(expected[0].name);
+
+  await dialog.locator(".search-result a", { hasText: productWithPhoto.name }).click();
+  await expect(page).toHaveURL(new RegExp(productPath(productWithPhoto)));
+});
+
+test("search shows sold pieces as sold and suggests categories when nothing matches", async ({ page }) => {
+  await page.goto("");
+  await page.locator(".search-shortcut").click(); // shortcut on the home page
+  const dialog = page.locator("#search");
+  const input = dialog.locator("[data-search-input]");
+
+  if (soldPiece) {
+    await input.fill(soldPiece.name);
+    await expect(dialog.locator(".search-result", { hasText: soldPiece.name })).toContainText("Vendida");
+  }
+
+  await input.fill("peça que não existe xyz");
+  await expect(dialog.locator(".search-result")).toHaveCount(0);
+  await expect(dialog.locator("[data-search-status]")).toHaveText("Nenhuma peça encontrada");
+  await expect(dialog.locator("[data-search-empty]")).toBeInViewport(); // right under the field, not pushed down
+  await expect(dialog.locator(".search-categories .chip")).toHaveCount(categories.length);
+
+  await dialog.locator("[data-search-close]").click();
+  await expect(dialog).toBeHidden();
 });
