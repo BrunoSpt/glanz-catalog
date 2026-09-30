@@ -20,7 +20,7 @@ function save(items){
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(items)); } catch(e) { /* list still works for this visit */ }
 }
 
-// Pieces currently available, embedded in every page at build time ({ id: { name, price, url, image } })
+// Pieces of the current collection, embedded in every page at build time ({ id: { name, price, url, image, soldOut, … } })
 function readCatalog(){
   try {
     return JSON.parse(document.getElementById('catalogIndex')?.textContent || 'null');
@@ -33,7 +33,7 @@ function readCatalog(){
 // still available, refreshing their name, price, photo and link from the current catalog
 function syncWithCatalog(saved, catalog){
   if(!catalog) return { items: saved, removed: 0 };
-  const items = saved.filter(item => catalog[item.id]).map(item => ({ id: item.id, ...catalog[item.id] }));
+  const items = saved.filter(item => catalog[item.id] && !catalog[item.id].soldOut).map(item => ({ id: item.id, ...catalog[item.id] }));
   return { items, removed: saved.length - items.length };
 }
 

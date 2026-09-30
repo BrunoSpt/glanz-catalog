@@ -123,6 +123,10 @@ As frases de garantia ("Banho triplo em ouro 18k", "Pedras em zircônia lapidada
 
 Os passos da seção "Como comprar" ficam no `src/_data/howToBuy.json`.
 
+## Busca
+
+A lupa no cabeçalho (e o campo "Buscar peças" na página inicial) procura as peças pelo nome e pela categoria, sem precisar de acento: "coracao" encontra "Coração". Ela usa sempre as peças cadastradas no `products.json`, então **não precisa de nenhuma configuração**. Dica: nomes de peças descritivos ("Brinco Gota Zircônia") ajudam as clientes a encontrar pela busca.
+
 ## Lista de interesse
 
 As clientes tocam no coração das peças para montar uma lista e enviam tudo de uma vez pelo Direct, numa mensagem com o nome e o preço de cada peça. O envio tem dois passos, porque o Instagram nem sempre aceita mensagem já escrita:

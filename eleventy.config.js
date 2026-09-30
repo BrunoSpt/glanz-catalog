@@ -6,6 +6,7 @@ import { installmentPlan } from "./src/js/installments.js";
 
 const site = JSON.parse(readFileSync("./src/_data/site.json", "utf8"));
 const policies = JSON.parse(readFileSync("./src/_data/storePolicies.json", "utf8"));
+const categories = JSON.parse(readFileSync("./src/_data/categories.json", "utf8"));
 
 // The site lives in a subfolder on GitHub Pages ("/glanz-catalog/"); derived from site.url
 // so the address is still defined in one place
@@ -56,12 +57,12 @@ export default function (eleventyConfig) {
     return plan && { count: plan.count, value: brlFormatter.format(plan.value) };
   });
 
-  // Available pieces as { id: { name, price, url, image } } for js/interest-list.js, so lists saved
-  // on a customer's phone drop pieces that were sold or left the collection
+  // Every piece of the current collection as { id: { name, price, url, image, category, soldOut } },
+  // available ones first. Used by js/search.js, and by js/interest-list.js so lists saved on a
+  // customer's phone drop pieces that were sold or left the collection.
   eleventyConfig.addFilter("catalogIndex", (products) => {
     const index = Object.fromEntries(
-      products
-        .filter((p) => !p.soldOut)
+      availableFirst(products)
         .map((p) => [
           slugify(p.name),
           {
@@ -70,6 +71,8 @@ export default function (eleventyConfig) {
             priceValue: p.price,
             url: pathPrefix + productUrl(p).slice(1),
             image: p.photos.length ? pathPrefix + p.photos[0] : "",
+            category: categories.find((c) => c.slug === p.category).label,
+            soldOut: !!p.soldOut,
           },
         ])
     );
