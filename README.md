@@ -71,7 +71,7 @@ src/
     products/              Product photos (WebP)
 lib/slugify.js             Product name → URL slug (shared by build and validation)
 scripts/validate-data.js   Catalog data validation (runs before every build)
-scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; prints products.json / highlights.json lines
+scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; registers products (price from the file name) and prints highlights.json lines
 tests/
   e2e/catalog.spec.js      End-to-end tests (Playwright)
   serve-site.js            Serves _site/ like GitHub Pages for the tests

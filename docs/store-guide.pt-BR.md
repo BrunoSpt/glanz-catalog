@@ -117,12 +117,17 @@ Esses textos ficam no `src/_data/storePolicies.json` e aparecem na seção "Como
 O jeito mais fácil é deixar o projeto converter as fotos sozinho:
 
 1. Coloque as fotos originais na pasta `photos-inbox/` (na pasta principal do projeto), **separadas por categoria**: `photos-inbox/Anéis/`, `photos-inbox/Brincos/`, `photos-inbox/Colares/`, `photos-inbox/Pulseiras/` ou `photos-inbox/Pingentes/`. Fotos para o carrossel da página inicial que não são de uma peça só (modelo usando as joias, composições, fotos de campanha) vão em `photos-inbox/Destaques/`. Pode ser JPG, PNG ou WebP, de qualquer tamanho.
-2. **Dê a cada foto o nome da peça**, do jeito que as clientes vão ver, por exemplo `Anel Laço.jpg`. Pode ter acento e espaço.
+2. **Dê a cada foto o nome da peça e o preço**, separados por ` - ` (espaço, traço, espaço):
+   - `Anel Laço - 59,90.jpg`: peça "Anel Laço", R$ 59,90.
+   - `Anel Laço (2).jpg`: segunda foto da mesma peça (a primeira foto é a capa).
+   - `Anel Laço.jpg`: sem preço; a peça entra com preço 0 e o site só é publicado depois que alguém preencher.
+
+   Pode ter acento e espaço no nome. O preço aceita `59,90`, `59.90` ou `R$ 59,90`.
 3. No terminal, rode `npm run images`.
 
 O comando converte cada foto para WebP, reduz para 1200 px de largura, corrige a rotação das fotos de celular, cria um nome de arquivo limpo (`anel-laco.webp`) e salva em `src/assets/products/<categoria>/` (ou em `src/assets/highlights/`, no caso dos destaques). As originais vão para `photos-inbox/processed/` (essa pasta não vai para o site nem para o GitHub).
 
-No fim, ele mostra as linhas prontas para colar no `src/_data/products.json`, com `"price": 0`. **Troque o 0 pelo preço de cada peça**: enquanto algum preço estiver 0, o site não é publicado.
+**As peças são cadastradas sozinhas** no `src/_data/products.json`, na categoria da pasta. Se já existir uma peça com o mesmo nome, ela não é duplicada: a foto nova é acrescentada a ela e, se o nome do arquivo tiver preço, o preço é atualizado. No fim, o terminal lista as peças novas, as atualizadas e as que estão **sem preço**: enquanto alguma estiver com preço 0, o site não é publicado.
 
 Para os destaques, ele mostra as linhas para colar no `src/_data/highlights.json`, já com a largura e a altura da foto. Troque o `"alt"` por uma descrição da foto (por exemplo, "Modelo usando colar dourado com pingente de coração"; ela é lida por leitores de tela e ajuda no Google) e, se quiser, escreva um `"caption"`, o texto que aparece sobre a foto. Se a foto do carrossel for de uma peça do catálogo, não precisa convertê-la de novo: aponte direto para a foto da peça, como `"assets/products/rings/anel-laco.webp"`.
 
