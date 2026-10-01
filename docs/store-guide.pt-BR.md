@@ -122,7 +122,7 @@ O jeito mais fácil é deixar o projeto converter as fotos sozinho:
    - `Anel Laço (2).jpg`: segunda foto da mesma peça (a primeira foto é a capa).
    - `Anel Laço.jpg`: sem preço; a peça entra com preço 0 e o site só é publicado depois que alguém preencher.
 
-   Pode ter acento e espaço no nome. O preço aceita `59,90`, `59.90` ou `R$ 59,90`.
+   Pode ter acento, espaço e hífen no nome ("Arco-Íris"). O preço aceita `175`, `59,90`, `59.90` ou `R$ 59,90`. O que separa o nome do preço é o traço **com espaço dos dois lados**; se o celular trocar o traço por um travessão (`–`), também funciona.
 3. No terminal, rode `npm run images`.
 
 O comando converte cada foto para WebP, reduz para 1200 px de largura, corrige a rotação das fotos de celular, cria um nome de arquivo limpo (`anel-laco.webp`) e salva em `src/assets/products/<categoria>/` (ou em `src/assets/highlights/`, no caso dos destaques). As originais vão para `photos-inbox/processed/` (essa pasta não vai para o site nem para o GitHub).

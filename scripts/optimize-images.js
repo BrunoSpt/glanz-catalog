@@ -55,7 +55,8 @@ export function parsePhotoName(fileName) {
     photoNumber = Number(numbered[2]);
   }
   let price = null;
-  const priced = base.match(/^(.*?)\s+-\s+(?:R\$\s*)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)$/i);
+  // " - ", or the dashes phones and text editors auto-replace it with (" – ", " — ")
+  const priced = base.match(/^(.*?)\s+[-–—]\s+(?:R\$\s*)?(\d{1,3}(?:\.\d{3})+(?:,\d{1,2})?|\d+(?:[.,]\d{1,2})?)$/i);
   if (priced) {
     price = parsePrice(priced[2]);
     if (price !== null) base = priced[1];
