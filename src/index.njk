@@ -32,7 +32,7 @@
       {%- if item.comingSoon %}
       <div class="slide placeholder"><img src="/assets/brand/sunburst.png" width="160" height="165" alt=""><span>{{ item.comingSoon }}</span></div>
       {%- else %}
-      <div class="slide"><img src="/{{ item.image }}" width="{{ item.width }}" height="{{ item.height }}" alt="{{ item.alt }}"><span class="caption">{{ item.caption }}</span></div>
+      <div class="slide"><img src="/{{ item.image }}" width="{{ item.width }}" height="{{ item.height }}" alt="{{ item.alt }}">{% if item.caption %}<span class="caption">{{ item.caption }}</span>{% endif %}</div>
       {%- endif %}
       {%- endfor %}
     </div>
