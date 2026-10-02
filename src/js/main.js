@@ -2,6 +2,7 @@
 // Pages are rendered at build time by Eleventy; this script only adds interactivity.
 // Code is in English; every user-facing string stays in Brazilian Portuguese.
 import { initCardCarousel, initHeroCarousel } from './carousel.js';
+import { initCatalogTools } from './catalog-tools.js';
 import { initDirectButtons } from './direct-message.js';
 import { initInterestList } from './interest-list.js';
 import { initLightbox } from './lightbox.js';
@@ -31,6 +32,7 @@ const heroTrack = document.getElementById('heroTrack');
 const heroDots = document.getElementById('heroDots');
 if(heroTrack && heroDots) initHeroCarousel(heroTrack, heroDots);
 
+initCatalogTools();
 initDirectButtons();
 initInterestList();
 initLightbox();

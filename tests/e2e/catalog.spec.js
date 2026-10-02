@@ -6,6 +6,7 @@ import { slugify } from "../../lib/slugify.js";
 import { installmentPlan } from "../../src/js/installments.js";
 import { collectionText } from "../../src/js/collection.js";
 import { searchCatalog } from "../../src/js/search.js";
+import { sortProducts, priceRanges, inRange } from "../../src/js/catalog-order.js";
 
 const data = (file) => JSON.parse(readFileSync(`src/_data/${file}`, "utf8"));
 const site = data("site.json");
@@ -18,11 +19,10 @@ const brl = (value) => new Intl.NumberFormat("pt-BR", { style: "currency", curre
 const normalizeSpaces = (text) => text.replace(/\s+/g, " ").trim(); // Intl uses a non-breaking space
 const productWithPhoto = products.find((p) => p.photos.length && !p.soldOut);
 const soldPiece = products.find((p) => p.soldOut);
-// Same order as the category pages: available pieces first, sold ones last
-const inCategory = (slug) => {
-  const items = products.filter((p) => p.category === slug);
-  return [...items.filter((p) => !p.soldOut), ...items.filter((p) => p.soldOut)];
-};
+// Same order as the category pages open in: A–Z, sold pieces last
+const inCategory = (slug) => sortProducts(products.filter((p) => p.category === slug));
+const names = (items) => items.map((p) => p.name);
+const visibleNames = async (page) => (await page.locator(".card:not([hidden]) .name").allTextContents()).map((n) => n.trim());
 const isPhone = (testInfo) => testInfo.project.name.startsWith("iphone");
 
 // Never leave the site: links to Instagram are blocked during tests
@@ -256,6 +256,56 @@ test("phone details: no blue tap flash, Direct button label on one line", async 
   expect(css).toMatch(/-webkit-tap-highlight-color:\s*transparent/);
   const heights = await page.locator(".card .btn-direct").evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().height));
   for (const height of heights) expect(height).toBeLessThanOrEqual(46); // one line (min-height 44px)
+});
+
+test("category pages open in alphabetical order, with sold pieces last", async ({ page }) => {
+  for (const category of categories) {
+    const items = inCategory(category.slug);
+    if (items.length < 2) continue;
+    await page.goto(`${category.slug}.html`);
+    await expect(page.locator("[data-sort]")).toHaveValue("a-z");
+    expect(await visibleNames(page)).toEqual(names(items));
+  }
+});
+
+// The category with the most pieces has the most useful price ranges
+const biggestCategory = [...categories].sort((a, b) => inCategory(b.slug).length - inCategory(a.slug).length)[0];
+
+test("customers can sort and filter a category, and the choice stays in the address", async ({ page }) => {
+  const items = inCategory(biggestCategory.slug);
+  test.skip(items.length < 2, "no category with two or more pieces");
+  await page.goto(`${biggestCategory.slug}.html`);
+  const sort = page.locator("[data-sort]");
+  expect(await sort.evaluate((el) => getComputedStyle(el).fontSize)).toBe("16px"); // smaller fields make iOS zoom in
+
+  await sort.selectOption("menor-preco");
+  const byPrice = sortProducts(items, "menor-preco");
+  expect(await visibleNames(page)).toEqual(names(byPrice));
+  await expect(page).toHaveURL(/ordem=menor-preco/);
+
+  const ranges = priceRanges(policies.installments.map((rule) => rule.above)).filter((r) => items.some((p) => inRange(p.price, r)));
+  test.skip(ranges.length < 2, "all pieces of the category are in the same price range");
+  const range = ranges[0];
+  const filtered = byPrice.filter((p) => inRange(p.price, range));
+  const rangeButton = page.locator(`[data-price-range="${range.id}"]`);
+  await expect(rangeButton).toHaveText(range.label); // toHaveText normalizes the non-breaking space Intl uses
+  await rangeButton.click();
+  await expect(rangeButton).toHaveAttribute("aria-pressed", "true");
+  expect(await visibleNames(page)).toEqual(names(filtered));
+  await expect(page.locator("[data-catalog-count]")).toHaveText(`${filtered.length} de ${items.length} peças`);
+
+  // a reload (or a link sent by the store) keeps the order and the filter
+  await page.reload();
+  await expect(sort).toHaveValue("menor-preco");
+  await expect(rangeButton).toHaveAttribute("aria-pressed", "true");
+  expect(await visibleNames(page)).toEqual(names(filtered));
+
+  // tapping the selected range again shows every piece
+  await rangeButton.click();
+  await expect(rangeButton).toHaveAttribute("aria-pressed", "false");
+  expect(await visibleNames(page)).toEqual(names(byPrice));
+  await expect(page.locator("[data-catalog-count]")).toHaveText(`${items.length} peças`);
+  await expect(page).not.toHaveURL(/preco=/);
 });
 
 test("a sold piece shows 'Vendida', comes last and can't be added to the list", async ({ page }) => {

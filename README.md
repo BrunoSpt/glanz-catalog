@@ -13,6 +13,7 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Data-driven catalog:** products, categories, home highlights and site settings are JSON files in `src/_data/`. Product cards are rendered at build time, so pages show the catalog immediately without waiting for JavaScript.
 - **Data validation:** every build checks the catalog data (JSON syntax, unknown fields, categories, prices, missing photos) and fails with a clear message, locally and in CI.
 - **Product pages:** every product gets its own shareable page (`/products/<name>/`) with a photo gallery, full-screen zoom, store guarantees, related products and a share button (native share sheet on phones, copy link elsewhere).
+- **Sort and filter:** category pages open in alphabetical order; customers can sort by price and filter by availability, sale and price range. Price ranges follow the installment thresholds ("Até R$ 80", "R$ 80 a R$ 130"…), so a budget filter also tells the number of installments. Only filters that change something on that page are shown. The choice is kept in the address (`?ordem=menor-preco&preco=80-130`), so it survives a reload and the store can send a filtered link. The order rules (`js/catalog-order.js`) are shared by the build and the browser.
 - **Search:** a magnifier in the header (and a search shortcut on the home page) opens instant search over the current collection, embedded in every page at build time — no server. Accent- and case-insensitive, matches name and category, lists available pieces first and marks sold ones.
 - **Interest list:** customers heart the pieces they like and send the whole list in a single Instagram Direct message. Stored in `localStorage` on the customer's device; no backend.
 - **Instagram Direct integration:** each product opens a Direct chat with a pre-written message naming the piece and linking to its page. Instagram doesn't always honor pre-filled text, so the message is also copied to the clipboard, with a toast telling the customer to paste it.
@@ -55,6 +56,8 @@ src/
   js/
     main.js                Entry point
     carousel.js            Card, gallery and home carousels
+    catalog-tools.js       Sort and filter on the category pages
+    catalog-order.js       Product order and price ranges (also used by the build)
     interest-list.js       Interest list (localStorage + drawer)
     lightbox.js            Full-screen photo zoom
     share.js               Share button

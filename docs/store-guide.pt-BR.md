@@ -152,6 +152,21 @@ As frases de garantia ("Banho triplo em ouro 18k", "Pedras em zircônia lapidada
 
 Os passos da seção "Como comprar" ficam no `src/_data/howToBuy.json`.
 
+## Ordenar e filtrar
+
+Cada categoria abre com as peças em **ordem alfabética** (as vendidas ficam sempre por último). Acima das peças, a cliente pode:
+
+- **Ordenar por:** A–Z, menor preço ou maior preço;
+- **Filtrar:** só disponíveis, só em promoção ou por faixa de preço. As faixas seguem o parcelamento do `storePolicies.json` (Até R$ 80, R$ 80 a R$ 130, R$ 130 a R$ 210, Acima de R$ 210), então quem filtra pelo orçamento já sabe em quantas vezes pode pagar.
+
+Só aparecem os filtros que fazem diferença naquela categoria: "Disponíveis" só aparece se houver peça vendida, "Promoção" só se houver peça em promoção, e as faixas só se as peças estiverem em mais de uma faixa. Nada disso precisa ser configurado.
+
+A escolha fica no endereço da página, então dá pra mandar no Direct um link já filtrado. Por exemplo:
+
+- `…/bracelets.html?preco=ate-80`: pulseiras até R$ 80;
+- `…/rings.html?ordem=menor-preco`: anéis do mais barato ao mais caro;
+- `…/rings.html?filtro=disponiveis&ordem=maior-preco`: anéis disponíveis, do mais caro ao mais barato.
+
 ## Busca
 
 A lupa no cabeçalho (e o campo "Buscar peças" na página inicial) procura as peças pelo nome e pela categoria, sem precisar de acento: "coracao" encontra "Coração". Ela usa sempre as peças cadastradas no `products.json`, então **não precisa de nenhuma configuração**. Dica: nomes de peças descritivos ("Brinco Gota Zircônia") ajudam as clientes a encontrar pela busca.

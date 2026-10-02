@@ -3,6 +3,7 @@ import { HtmlBasePlugin } from "@11ty/eleventy";
 import { validateData } from "./scripts/validate-data.js";
 import { slugify } from "./lib/slugify.js";
 import { installmentPlan } from "./src/js/installments.js";
+import { sortProducts, priceRanges, inRange } from "./src/js/catalog-order.js";
 
 const site = JSON.parse(readFileSync("./src/_data/site.json", "utf8"));
 const policies = JSON.parse(readFileSync("./src/_data/storePolicies.json", "utf8"));
@@ -42,10 +43,15 @@ export default function (eleventyConfig) {
   // ---- product lists ----
   // Pieces are unique: a sold piece stays visible (badge "Vendida") but after the available ones
   const availableFirst = (products) => [...products].sort((a, b) => Number(!!a.soldOut) - Number(!!b.soldOut));
-  eleventyConfig.addFilter("byCategory", (products, slug) => availableFirst(products.filter((p) => p.category === slug)));
+  // Category pages open in alphabetical order (sold pieces last); customers can re-sort them (js/catalog-tools.js)
+  eleventyConfig.addFilter("byCategory", (products, slug) => sortProducts(products.filter((p) => p.category === slug)));
   eleventyConfig.addFilter("available", (products) => products.filter((p) => !p.soldOut));
   eleventyConfig.addFilter("related", (products, product, limit = 4) =>
     availableFirst(products.filter((p) => p.category === product.category && p.name !== product.name)).slice(0, limit)
+  );
+  // Price ranges (from the installment thresholds) that have at least one of these products
+  eleventyConfig.addFilter("priceRanges", (products) =>
+    priceRanges(policies.installments.map((rule) => rule.above)).filter((range) => products.some((p) => inRange(p.price, range)))
   );
   eleventyConfig.addFilter("categoryOf", (categories, slug) => categories.find((c) => c.slug === slug));
 

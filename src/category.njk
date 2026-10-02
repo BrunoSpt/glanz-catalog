@@ -12,20 +12,66 @@
 {%- from "partials/product-card.njk" import productCard %}
 {%- set currentSlug = category.slug %}
 {%- set items = products | byCategory(category.slug) %}
+{%- set total = items | length %}
+{%- set availableCount = items | available | length %}
+{%- set saleCount = items | selectattr("compareAtPrice") | length %}
+{%- set ranges = items | priceRanges %}
   {% include "partials/category-chips.njk" %}
 
   <section class="page-head container">
-    <p class="kicker">Catálogo · {{ items | length }} {{ "peça" if items | length == 1 else "peças" }}</p>
+    <p class="kicker">Catálogo · <span data-catalog-count aria-live="polite">{{ total }} {{ "peça" if total == 1 else "peças" }}</span></p>
     <h1 class="serif">{{ category.label }}</h1>
     <p>{{ category.description }}</p>
   </section>
 
+  {#- Sort and filter (js/catalog-tools.js). Only filters that change something are shown;
+      without JavaScript the controls stay hidden and the pieces keep the default A–Z order. #}
+  {%- if total > 1 %}
+  <section class="catalog-tools" data-catalog-tools aria-label="Ordenar e filtrar">
+    {%- set showAvailable = availableCount > 0 and availableCount < total %}
+    {%- set showSale = saleCount > 0 and saleCount < total %}
+    {%- set showRanges = ranges | length > 1 %}
+    {%- if showAvailable or showSale or showRanges %}
+    <div class="chip-row filter-row" role="group" aria-labelledby="filter-label">
+      <span class="tools-label" id="filter-label">Filtrar</span>
+      {%- if showAvailable %}
+      <button class="chip" type="button" aria-pressed="false" data-filter="disponiveis">Disponíveis</button>
+      {%- endif %}
+      {%- if showSale %}
+      <button class="chip" type="button" aria-pressed="false" data-filter="promocao">Promoção</button>
+      {%- endif %}
+      {%- if showRanges %}
+      {%- for range in ranges %}
+      <button class="chip" type="button" aria-pressed="false" data-price-range="{{ range.id }}">{{ range.label }}</button>
+      {%- endfor %}
+      {%- endif %}
+    </div>
+    {%- endif %}
+    <div class="container sort-row">
+      <label class="sort-field">
+        <span class="tools-label">Ordenar por</span>
+        <select data-sort>
+          <option value="a-z">A–Z</option>
+          <option value="menor-preco">Menor preço</option>
+          <option value="maior-preco">Maior preço</option>
+        </select>
+      </label>
+    </div>
+  </section>
+  {%- endif %}
+
   <section class="container">
-    <div class="product-grid">
+    <div class="product-grid" data-catalog-grid>
       {%- for product in items %}
       {{ productCard(product, site.name) }}
       {%- else %}
       <p class="grid-message">Novas peças em breve.</p>
       {%- endfor %}
+      {%- if total > 1 %}
+      <div class="grid-message filter-empty" data-filter-empty hidden>
+        <p>Nenhuma peça com esses filtros.</p>
+        <button class="btn btn-secondary" type="button" data-clear-filters>Limpar filtros</button>
+      </div>
+      {%- endif %}
     </div>
   </section>

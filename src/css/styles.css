@@ -109,7 +109,26 @@ button{font:inherit;color:inherit}
   transition:.15s ease;
 }
 .chip:active{border-color:var(--orange);color:var(--orange)}
-.chip.active{background:var(--maroon);border-color:var(--maroon);color:var(--white)}
+.chip.active,.chip[aria-pressed="true"]{background:var(--maroon);border-color:var(--maroon);color:var(--white)}
+
+/* ---------- sort & filter (category pages; js/catalog-tools.js) ---------- */
+.catalog-tools{display:none} /* the controls need JavaScript */
+.js .catalog-tools{display:block}
+.tools-label{flex:0 0 auto;align-self:center;font-size:11.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.filter-row{padding-top:6px;gap:7px}
+.filter-row .chip{padding:7px 14px;font-size:12.3px}
+.sort-row{display:flex;justify-content:flex-end;padding-top:12px}
+.sort-field{display:flex;align-items:center;gap:10px}
+.sort-field select{
+  -webkit-appearance:none;appearance:none;margin:0;cursor:pointer;
+  font:inherit;font-size:16px; /* iOS zooms into fields smaller than 16px */
+  color:var(--maroon);border:1px solid var(--line);border-radius:999px;padding:7px 36px 7px 16px;
+  background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5l5-5' fill='none' stroke='%23872615' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/12px 8px;
+}
+.sort-field select:focus-visible{outline:2px solid var(--orange);outline-offset:2px}
+.filter-empty{display:flex;flex-direction:column;align-items:center;gap:14px;margin:24px 0}
+.filter-empty p{margin:0}
+.product-grid > [hidden]{display:none !important} /* cards are display:flex, which would override [hidden] */
 
 /* home: circles styled like Instagram story highlights */
 .category-circles{
@@ -521,7 +540,7 @@ dialog.is-fallback[open]{position:fixed;top:0;bottom:0;z-index:100}
   .btn-primary:hover{background:#6f1f11}
   .btn-secondary:hover{border-color:var(--orange)}
   .back-link:hover{opacity:.7}
-  .chip:not(.active):hover{border-color:var(--orange);color:var(--orange)}
+  .chip:not(.active):not([aria-pressed="true"]):hover{border-color:var(--orange);color:var(--orange)}
   .category-circle:hover .label{color:var(--orange)}
   .btn-direct:hover{background:#6f1f11}
   .breadcrumb a:hover{color:var(--maroon)}
