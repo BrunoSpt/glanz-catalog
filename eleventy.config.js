@@ -9,8 +9,8 @@ const site = JSON.parse(readFileSync("./src/_data/site.json", "utf8"));
 const policies = JSON.parse(readFileSync("./src/_data/storePolicies.json", "utf8"));
 const categories = JSON.parse(readFileSync("./src/_data/categories.json", "utf8"));
 
-// The site lives in a subfolder on GitHub Pages ("/glanz-catalog/"); derived from site.url
-// so the address is still defined in one place
+// Path the site lives under: "/" on its own address, "/folder/" if it is ever hosted in a subfolder.
+// Derived from site.url so the address is defined in one place
 const pathPrefix = new URL(site.url).pathname;
 
 const brlFormatter = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
@@ -88,7 +88,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("productUrl", productUrl);
   // For URLs the base plugin can't see (data-* attributes read by JavaScript)
   eleventyConfig.addFilter("withBase", (path) => pathPrefix + path.replace(/^\//, ""));
-  // "/rings.html" -> "https://brunospt.github.io/glanz-catalog/rings.html"
+  // "/rings/" -> "https://glanzsemijoias.pages.dev/rings/"
   eleventyConfig.addFilter("absoluteUrl", absoluteUrl);
 
   // ---- Instagram Direct ----

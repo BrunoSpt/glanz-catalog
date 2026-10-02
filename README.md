@@ -2,7 +2,7 @@
 
 Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrolina, Brazil. Customers browse pieces by category and ask about any item through Instagram Direct with one tap.
 
-**Live site:** https://brunospt.github.io/glanz-catalog/
+**Live site:** https://glanzsemijoias.pages.dev/
 
 > The codebase is in English; the user interface is in Brazilian Portuguese (pt-BR), the store's language.
 > The store owner's guide (in Portuguese) is at [`docs/store-guide.pt-BR.md`](docs/store-guide.pt-BR.md).
@@ -27,7 +27,7 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Performance:** WebP images, explicit image dimensions to avoid layout shift, small vanilla JS modules and no runtime dependencies.
 - **Accessibility:** respects `prefers-reduced-motion`, semantic navigation with `aria-current`, alt text on product photos.
 - **End-to-end tests:** Playwright runs the production build on iPhone-sized WebKit (Safari's engine, including the narrowest 375px screen) and desktop Chromium, covering every page, the interest list, photo zoom and Instagram Direct links. Expectations are derived from the catalog data.
-- **Continuous deployment:** GitHub Actions builds, tests and deploys to GitHub Pages on every push to `main`; pull requests are built and tested without deploying. A failing test blocks the deploy.
+- **Continuous deployment:** GitHub Actions builds, tests and deploys to Cloudflare Pages on every push to `main`; pull requests are built and tested without deploying. A failing test blocks the deploy.
 
 ## Project structure
 
@@ -49,7 +49,7 @@ src/
       icons.njk            Inline SVG icons
       product-card.njk     Product card, badges, price and button macros
   index.njk                Home page
-  category.njk             One template → one page per category (rings.html, earrings.html…)
+  category.njk             One template → one page per category (rings/, earrings/…)
   product.njk              One template → one page per product (products/<slug>/)
   404.njk                  Not found page
   css/styles.css
@@ -77,7 +77,7 @@ scripts/validate-data.js   Catalog data validation (runs before every build)
 scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; registers products (price from the file name) and prints highlights.json lines
 tests/
   e2e/catalog.spec.js      End-to-end tests (Playwright)
-  serve-site.js            Serves _site/ like GitHub Pages for the tests
+  serve-site.js            Serves _site/ like Cloudflare Pages for the tests
 playwright.config.js       Test projects: iPhone 17, narrow iPhone, desktop Chrome
 docs/                      Store owner's guide (pt-BR)
 .github/workflows/         Build and deploy pipeline
@@ -125,7 +125,7 @@ Requires Node.js 20 or newer.
 
 ```bash
 npm install
-npm start          # dev server with live reload at http://localhost:8080/glanz-catalog/
+npm start          # dev server with live reload at http://localhost:8080/
 npm run build      # production build into _site/
 npm run validate   # check the catalog data only
 npm run images     # convert photos in photos-inbox/<category or Destaques>/ to 1200px WebP in src/assets/
@@ -136,6 +136,8 @@ npm test               # build, serve and run the end-to-end tests
 
 ## Deployment
 
-The workflow in `.github/workflows/deploy.yml` builds and tests the site, then publishes `_site/` to GitHub Pages on every push to `main` (repository **Settings → Pages → Source: GitHub Actions**). If a test fails, nothing is deployed and the Playwright report is attached to the run.
+The workflow in `.github/workflows/deploy.yml` builds and tests the site on every push and pull request. On `main`, it then publishes `_site/` to **Cloudflare Pages** (project `glanzsemijoias`) with Wrangler. It needs two repository secrets: `CLOUDFLARE_API_TOKEN` (a token with the *Account → Cloudflare Pages → Edit* permission) and `CLOUDFLARE_ACCOUNT_ID`.
 
-The site URL is set once in `src/_data/site.json` (`url`). It drives the absolute URLs required by Open Graph tags and the path prefix (`/glanz-catalog/`) that Eleventy's HTML base plugin adds to every internal link.
+If a test fails, nothing is deployed and the Playwright report is attached to the run. The site is built and tested in GitHub Actions rather than by Cloudflare so that the iPhone tests keep blocking a broken deploy.
+
+The site URL is set once in `src/_data/site.json` (`url`). It drives the absolute URLs required by Open Graph tags and, if the site is ever hosted in a subfolder, the path prefix that Eleventy's HTML base plugin adds to every internal link. Pointing a custom domain at the Cloudflare project only requires updating that `url`.

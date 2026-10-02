@@ -40,7 +40,7 @@ function trackErrors(page) {
 }
 
 // One test per page: quick in parallel and a clear report of which page failed
-const pagePaths = ["", ...categories.map((c) => `${c.slug}.html`), ...products.map(productPath)];
+const pagePaths = ["", ...categories.map((c) => `${c.slug}/`), ...products.map(productPath)];
 for (const path of pagePaths) {
   test(`renders /${path || "(home)"} without errors, broken images or hidden photos`, async ({ page }) => {
     const errors = trackErrors(page);
@@ -85,7 +85,7 @@ test("links to pieces that left the collection explain it and show what's availa
 test("category pages list their products with formatted prices", async ({ page }) => {
   for (const category of categories) {
     const items = inCategory(category.slug);
-    await page.goto(`${category.slug}.html`);
+    await page.goto(`${category.slug}/`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(category.label);
     await expect(page.locator(".kicker")).toHaveText(`Catálogo · ${items.length} ${items.length === 1 ? "peça" : "peças"}`);
     await expect(page.locator(".card")).toHaveCount(items.length);
@@ -157,7 +157,7 @@ test("interest list: add, keep after reload, copy the message, remove", async ({
   const availableIn = (slug) => inCategory(slug).filter((p) => !p.soldOut);
   const category = categories.find((c) => availableIn(c.slug).length >= 2);
   const [first, second] = availableIn(category.slug);
-  await page.goto(`${category.slug}.html`);
+  await page.goto(`${category.slug}/`);
   await page.evaluate(() => localStorage.clear());
   await page.reload();
 
@@ -249,7 +249,7 @@ test("photo viewer on desktop: wheel and +/- buttons zoom", async ({ page }, tes
 
 test("phone details: no blue tap flash, Direct button label on one line", async ({ page }, testInfo) => {
   test.skip(!isPhone(testInfo), "phones only");
-  await page.goto(`${categories[0].slug}.html`);
+  await page.goto(`${categories[0].slug}/`);
   // -webkit-tap-highlight-color only exists in iOS Safari (desktop WebKit ignores it),
   // so check that the published stylesheet turns it off
   const css = await (await page.request.get("css/styles.css")).text();
@@ -262,7 +262,7 @@ test("category pages open in alphabetical order, with sold pieces last", async (
   for (const category of categories) {
     const items = inCategory(category.slug);
     if (items.length < 2) continue;
-    await page.goto(`${category.slug}.html`);
+    await page.goto(`${category.slug}/`);
     await expect(page.locator("[data-sort]")).toHaveValue("a-z");
     expect(await visibleNames(page)).toEqual(names(items));
   }
@@ -274,7 +274,7 @@ const biggestCategory = [...categories].sort((a, b) => inCategory(b.slug).length
 test("customers can sort and filter a category, and the choice stays in the address", async ({ page }) => {
   const items = inCategory(biggestCategory.slug);
   test.skip(items.length < 2, "no category with two or more pieces");
-  await page.goto(`${biggestCategory.slug}.html`);
+  await page.goto(`${biggestCategory.slug}/`);
   const sort = page.locator("[data-sort]");
   expect(await sort.evaluate((el) => getComputedStyle(el).fontSize)).toBe("16px"); // smaller fields make iOS zoom in
 
@@ -311,7 +311,7 @@ test("customers can sort and filter a category, and the choice stays in the addr
 test("a sold piece shows 'Vendida', comes last and can't be added to the list", async ({ page }) => {
   test.skip(!soldPiece, "no sold piece in the catalog right now");
   const items = inCategory(soldPiece.category);
-  await page.goto(`${soldPiece.category}.html`);
+  await page.goto(`${soldPiece.category}/`);
   const lastCard = page.locator(".card").last();
   await expect(lastCard).toContainText(items[items.length - 1].name);
   const soldCard = page.locator(".card", { hasText: soldPiece.name });
@@ -353,7 +353,7 @@ const searchEntries = [...products.filter((p) => !p.soldOut), ...products.filter
 }));
 
 test("search finds pieces ignoring accents, from the header on any page", async ({ page }) => {
-  await page.goto(`${categories[0].slug}.html`);
+  await page.goto(`${categories[0].slug}/`);
   await page.getByRole("button", { name: "Buscar peças" }).click();
   const dialog = page.locator("#search");
   const input = dialog.locator("[data-search-input]");

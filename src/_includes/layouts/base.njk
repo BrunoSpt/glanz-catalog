@@ -86,7 +86,7 @@
     <div class="search-empty" data-search-empty hidden>
       <p>Que tal ver por categoria?</p>
       <nav class="search-categories" aria-label="Categorias">
-        {%- for c in categories %}<a class="chip" href="/{{ c.slug }}.html">{{ c.label }}</a>{% endfor %}
+        {%- for c in categories %}<a class="chip" href="/{{ c.slug }}/">{{ c.label }}</a>{% endfor %}
       </nav>
     </div>
   </div>

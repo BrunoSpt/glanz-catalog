@@ -1,5 +1,5 @@
 // Minimal static server for the end-to-end tests: serves the production build (_site/)
-// the way GitHub Pages does — under the site's path prefix, index.html for folders,
+// the way Cloudflare Pages does — under the site's path prefix, index.html for folders,
 // and 404.html for anything missing. No dependencies.
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
@@ -9,7 +9,7 @@ import path from "node:path";
 const ROOT = path.resolve("_site");
 const PORT = Number(process.env.PORT || 8090);
 const site = JSON.parse(readFileSync("src/_data/site.json", "utf8"));
-const PREFIX = new URL(site.url).pathname; // "/glanz-catalog/"
+const PREFIX = new URL(site.url).pathname; // "/" (or "/folder/" for a site in a subfolder)
 
 const TYPES = {
   ".html": "text/html; charset=utf-8",
@@ -37,7 +37,7 @@ async function resolveFile(urlPath) {
 
 createServer(async (req, res) => {
   const { pathname } = new URL(req.url, "http://localhost");
-  if (pathname === "/") {
+  if (pathname === "/" && PREFIX !== "/") {
     res.writeHead(302, { Location: PREFIX }).end();
     return;
   }

@@ -8,11 +8,9 @@ on:
 
 permissions:
   contents: read
-  pages: write
-  id-token: write
 
 concurrency:
-  group: pages-${{ github.ref }}
+  group: deploy-${{ github.ref }}
   # Superseded PR builds can be cancelled; a deploy in progress is never interrupted
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
@@ -44,18 +42,33 @@ jobs:
           path: playwright-report/
           retention-days: 14
 
-      - uses: actions/upload-pages-artifact@v5
+      - uses: actions/upload-artifact@v7
         if: github.event_name != 'pull_request'
         with:
-          path: _site
+          name: site
+          path: _site/
+          retention-days: 7
 
+  # The site: Cloudflare Pages (https://glanzsemijoias.pages.dev/)
   deploy:
     if: github.event_name != 'pull_request'
     needs: build
     runs-on: ubuntu-latest
     environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      name: cloudflare-pages
+      url: ${{ steps.deployment.outputs.deployment-url }}
     steps:
+      - uses: actions/download-artifact@v8
+        with:
+          name: site
+          path: _site
+
+      # CLOUDFLARE_API_TOKEN (permission: Account > Cloudflare Pages > Edit) and
+      # CLOUDFLARE_ACCOUNT_ID are repository secrets (Settings > Secrets and variables > Actions)
       - id: deployment
-        uses: actions/deploy-pages@v5
+        uses: cloudflare/wrangler-action@v4
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: pages deploy _site --project-name=glanzsemijoias --branch=main
+

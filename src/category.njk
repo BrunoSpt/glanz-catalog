@@ -2,7 +2,7 @@
 {
   layout: "layouts/base.njk",
   pagination: { data: "categories", size: 1, alias: "category" },
-  permalink: (data) => `${data.category.slug}.html`,
+  permalink: (data) => `${data.category.slug}/index.html`,
   eleventyComputed: {
     title: (data) => `${data.category.label} — ${data.site.name}`,
     description: (data) => data.category.description,

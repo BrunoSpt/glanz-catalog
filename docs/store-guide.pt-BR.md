@@ -4,6 +4,8 @@ Este guia explica como cadastrar e editar as peças do catálogo da GLANZ Semi J
 
 ## Como funciona
 
+O site fica em **https://glanzsemijoias.pages.dev/** (hospedado de graça no Cloudflare Pages).
+
 Os dados do catálogo ficam em arquivos na pasta `src/_data/`:
 
 | Arquivo              | O que tem |
@@ -163,9 +165,9 @@ Só aparecem os filtros que fazem diferença naquela categoria: "Disponíveis" s
 
 A escolha fica no endereço da página, então dá pra mandar no Direct um link já filtrado. Por exemplo:
 
-- `…/bracelets.html?preco=ate-80`: pulseiras até R$ 80;
-- `…/rings.html?ordem=menor-preco`: anéis do mais barato ao mais caro;
-- `…/rings.html?filtro=disponiveis&ordem=maior-preco`: anéis disponíveis, do mais caro ao mais barato.
+- `…/bracelets/?preco=ate-80`: pulseiras até R$ 80;
+- `…/rings/?ordem=menor-preco`: anéis do mais barato ao mais caro;
+- `…/rings/?filtro=disponiveis&ordem=maior-preco`: anéis disponíveis, do mais caro ao mais barato.
 
 ## Busca
 

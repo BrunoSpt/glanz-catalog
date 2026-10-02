@@ -1,7 +1,7 @@
 {#- Home category navigation, styled like Instagram story highlights -#}
 <nav class="category-circles" aria-label="Categorias">
   {%- for c in categories %}
-  <a class="category-circle" href="/{{ c.slug }}.html">
+  <a class="category-circle" href="/{{ c.slug }}/">
     <span class="circle{% if not c.image %} circle-placeholder{% endif %}">
       {%- if c.image %}
       <img src="/{{ c.image }}" alt="" loading="lazy">
