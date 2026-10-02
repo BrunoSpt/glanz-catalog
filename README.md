@@ -67,9 +67,11 @@ src/
     toast.js               Toast notification
   assets/
     brand/                 Logo, icons, favicon, share image
+    highlights/            Home carousel photos that aren't of a single product
     products/              Product photos (WebP)
 lib/slugify.js             Product name → URL slug (shared by build and validation)
 scripts/validate-data.js   Catalog data validation (runs before every build)
+scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; registers products (price from the file name) and prints highlights.json lines
 tests/
   e2e/catalog.spec.js      End-to-end tests (Playwright)
   serve-site.js            Serves _site/ like GitHub Pages for the tests
@@ -124,6 +126,7 @@ npm install
 npm start          # dev server with live reload at http://localhost:8080/glanz-catalog/
 npm run build      # production build into _site/
 npm run validate   # check the catalog data only
+npm run images     # convert photos in photos-inbox/<category or Destaques>/ to 1200px WebP in src/assets/
 
 npm run test:install   # once: download the WebKit and Chromium test browsers
 npm test               # build, serve and run the end-to-end tests

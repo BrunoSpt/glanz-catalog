@@ -82,7 +82,7 @@ Nos dois casos, se a peça estiver na lista de interesse de alguma cliente, ela 
 
 Quando as peças não vendidas voltam para o fornecedor e chegam as novas:
 
-1. **Fotos:** apague da pasta `src/assets/products/` as fotos das peças que foram embora e coloque as fotos das peças novas.
+1. **Fotos:** apague da pasta `src/assets/products/` as fotos das peças que foram embora e prepare as novas com `npm run images` (veja "Fotos" abaixo).
 2. **Peças:** no `src/_data/products.json`, apague as linhas das peças que foram embora (incluindo as vendidas) e cadastre as novas.
 3. **Carrossel da página inicial:** no `src/_data/highlights.json`, troque as fotos de destaque pelas da coleção nova. Cada destaque tem a foto (`image`), a largura e a altura dela em pixels (`width` e `height`), uma descrição (`alt`) e o texto que aparece sobre a foto (`caption`).
 4. **Categorias:** se a foto de alguma categoria no `src/_data/categories.json` (campo `image`) era de uma peça que foi embora, troque por uma foto nova ou apague o campo.
@@ -112,10 +112,40 @@ Esses textos ficam no `src/_data/storePolicies.json` e aparecem na seção "Como
 
 ## Fotos
 
-- Coloque as fotos das peças em `src/assets/products/`.
-- Prefira o formato **WebP**, que é bem mais leve que JPG. Dá pra converter de graça em sites como [squoosh.app](https://squoosh.app).
-- Use nomes sem acento e sem espaço, por exemplo `anel-solitario.webp`.
-- No `products.json`, o caminho da foto começa em `assets/`, por exemplo `"assets/products/anel-solitario.webp"`.
+### Preparar as fotos automaticamente (`npm run images`)
+
+O jeito mais fácil é deixar o projeto converter as fotos sozinho:
+
+1. Coloque as fotos originais na pasta `photos-inbox/` (na pasta principal do projeto), **separadas por categoria**: `photos-inbox/Anéis/`, `photos-inbox/Brincos/`, `photos-inbox/Colares/`, `photos-inbox/Pulseiras/` ou `photos-inbox/Pingentes/`. Fotos para o carrossel da página inicial que não são de uma peça só (modelo usando as joias, composições, fotos de campanha) vão em `photos-inbox/Destaques/`. Pode ser JPG, PNG ou WebP, de qualquer tamanho.
+2. **Dê a cada foto o nome da peça e o preço**, separados por ` - ` (espaço, traço, espaço):
+   - `Anel Laço - 59,90.jpg`: peça "Anel Laço", R$ 59,90.
+   - `Anel Laço (2).jpg`: segunda foto da mesma peça (a primeira foto é a capa).
+   - `Anel Laço.jpg`: sem preço; a peça entra com preço 0 e o site só é publicado depois que alguém preencher.
+
+   Pode ter acento, espaço e hífen no nome ("Arco-Íris"). O preço aceita `175`, `59,90`, `59.90` ou `R$ 59,90`. O que separa o nome do preço é o traço **com espaço dos dois lados**; se o celular trocar o traço por um travessão (`–`), também funciona.
+3. No terminal, rode `npm run images`.
+
+O comando converte cada foto para WebP, reduz para 1200 px de largura, corrige a rotação das fotos de celular, cria um nome de arquivo limpo (`anel-laco.webp`) e salva em `src/assets/products/<categoria>/` (ou em `src/assets/highlights/`, no caso dos destaques). As originais vão para `photos-inbox/processed/` (essa pasta não vai para o site nem para o GitHub).
+
+**As peças são cadastradas sozinhas** no `src/_data/products.json`, na categoria da pasta. Se já existir uma peça com o mesmo nome, ela não é duplicada: a foto nova é acrescentada a ela e, se o nome do arquivo tiver preço, o preço é atualizado. No fim, o terminal lista as peças novas, as atualizadas e as que estão **sem preço**: enquanto alguma estiver com preço 0, o site não é publicado.
+
+Para os destaques, ele mostra as linhas para colar no `src/_data/highlights.json`, já com a largura e a altura da foto. Troque o `"alt"` por uma descrição da foto (por exemplo, "Modelo usando colar dourado com pingente de coração"; ela é lida por leitores de tela e ajuda no Google) e, se quiser, escreva um `"caption"`, o texto que aparece sobre a foto. Se a foto do carrossel for de uma peça do catálogo, não precisa convertê-la de novo: aponte direto para a foto da peça, como `"assets/products/rings/anel-laco.webp"`.
+
+Ele também avisa quando uma foto não está em pé (4:5), porque ela vai ser cortada nos cards, ou quando é pequena demais.
+
+**Fotos HEIC do iPhone:** se aparecer erro numa foto `.heic`, exporte a foto como JPG (no iPhone: Ajustes → Câmera → Formatos → "Mais Compatível") e rode de novo.
+
+### Como as fotos devem ser
+
+- **Em pé, no formato 4:5** (ex.: 1200 × 1500 px). Fotos quadradas ou deitadas são cortadas.
+- **Peça no centro, com espaço em volta**: o card, o círculo da categoria e a busca cortam as bordas.
+- **Mesmo fundo e mesma luz em todas**, sem filtros fortes, para o dourado aparecer com a cor real.
+- **Sem texto, preço ou marca d'água** na foto.
+- **Mais de uma foto por peça**, quando der: a primeira é a capa; uma foto da peça sendo usada ajuda a cliente a entender o tamanho.
+
+### Sem o comando
+
+Se preferir preparar à mão: converta para **WebP**, qualidade 80 e 1200 px de largura (por exemplo no [squoosh.app](https://squoosh.app)), use nomes sem acento e sem espaço (`anel-solitario.webp`) e coloque em `src/assets/products/` na pasta da categoria: `rings/` (anéis), `earrings/` (brincos), `necklaces/` (colares), `bracelets/` (pulseiras) ou `pendants/` (pingentes). No `products.json`, o caminho começa em `assets/`, por exemplo `"assets/products/rings/anel-solitario.webp"`.
 
 ## Garantias e "Como comprar"
 

@@ -29,6 +29,7 @@ export function validateData() {
   const categories = readJson("categories.json", errors);
   const products = readJson("products.json", errors);
   const policies = readJson("storePolicies.json", errors);
+  const highlights = readJson("highlights.json", errors);
   if (errors.length) return errors;
 
   if (!/^https:\/\/.+\/$/.test(site.url)) errors.push(`site.json: "url" must start with https:// and end with "/"`);
@@ -104,6 +105,25 @@ export function validateData() {
       else productSlugs.set(slug, i + 1);
     }
   });
+
+  // highlights.json: home carousel; a slide is either a photo or a "coming soon" placeholder
+  if (!Array.isArray(highlights)) {
+    errors.push("highlights.json: must be a list of slides");
+  } else {
+    highlights.forEach((h, i) => {
+      const where = `highlights.json #${i + 1}`;
+      if (typeof h.comingSoon === "string") return;
+      if (typeof h.image !== "string" || !existsSync(path.join(SRC, h.image))) {
+        errors.push(`${where}: photo not found "src/${h.image}"`);
+      }
+      // width/height let the browser reserve the space before the photo loads
+      if (!Number.isInteger(h.width) || h.width <= 0 || !Number.isInteger(h.height) || h.height <= 0) {
+        errors.push(`${where}: "width" and "height" must be the photo size in pixels, e.g. 1200 and 1500`);
+      }
+      if (typeof h.alt !== "string" || !h.alt.trim()) errors.push(`${where}: "alt" (photo description) is required`);
+      if ("caption" in h && typeof h.caption !== "string") errors.push(`${where}: "caption" must be text`);
+    });
+  }
 
   return errors;
 }
