@@ -18,9 +18,17 @@
   { "name": "Brinco Argola Trançada", "category": "earrings", "price": 39.90, "photos": [], "sample": true },
   { "name": "Brinco Gota Zircônia", "category": "earrings", "price": 44.90, "photos": [], "sample": true },
 
-  { "name": "Colar Ponto de Luz", "category": "necklaces", "price": 64.90, "photos": [], "sample": true, "isNew": true },
-  { "name": "Colar Veneziana", "category": "necklaces", "price": 58.90, "photos": [], "sample": true },
-  { "name": "Colar Coração Duplo", "category": "necklaces", "price": 52.90, "photos": [], "sample": true },
+  
+  { "name": "Choker Corações Vazados", "category": "necklaces", "price": 504.00, "photos": ["assets/products/necklaces/choker-coracoes-vazados.webp"] },
+  { "name": "Colar Choker Bolinha", "category": "necklaces", "price": 233.00, "photos": ["assets/products/necklaces/colar-choker-bolinha.webp"] },
+  { "name": "Colar Elo Redondo", "category": "necklaces", "price": 449.00, "photos": ["assets/products/necklaces/colar-elo-redondo.webp"] },
+  { "name": "Colar Jasmin Trançada", "category": "necklaces", "price": 447.00, "photos": ["assets/products/necklaces/colar-jasmin-trancada-447.webp"] },
+  { "name": "Colar Minimalista Elo", "category": "necklaces", "price": 281.00, "photos": ["assets/products/necklaces/colar-minimalista-elo.webp"] },
+  { "name": "Colar Pontilhado", "category": "necklaces", "price": 186.00, "photos": ["assets/products/necklaces/colar-pontilhado.webp"] },
+  { "name": "Colar Veneziana com Pingente Coração Liso", "category": "necklaces", "price": 314.00, "photos": ["assets/products/necklaces/colar-veneziana-com-pingente-coracao-liso.webp"] },
+  { "name": "Corrente Laminada", "category": "necklaces", "price": 232.00, "photos": ["assets/products/necklaces/corrente-laminada.webp"] },
+  { "name": "Corrente Torcida", "category": "necklaces", "price": 264.00, "photos": ["assets/products/necklaces/corrente-torcida.webp"] },
+  { "name": "Corrente Veneziana Box", "category": "necklaces", "price": 415.00, "photos": ["assets/products/necklaces/corrente-veneziana-box.webp"] },
 
   { "name": "Pulseira Amor e Flor", "category": "bracelets", "price": 119.90, "photos": ["assets/products/bracelets/pulseira-amor-e-flor.webp"] },
   { "name": "Pulseira Bolinha Minimalista", "category": "bracelets", "price": 79.90, "photos": ["assets/products/bracelets/pulseira-bolinha-minimalista.webp"] },

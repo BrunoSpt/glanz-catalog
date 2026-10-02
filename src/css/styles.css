@@ -225,7 +225,6 @@ button{font:inherit;color:inherit}
 .badge-sample{background:rgba(135,38,21,.85);color:#fff}
 .badge-sold-out{background:#5b4a45;color:#fff}
 .badge-sale{background:var(--maroon);color:#fff}
-.badge-new{background:var(--sky);color:var(--maroon)}
 
 .list-toggle{
   position:absolute;top:8px;right:8px;

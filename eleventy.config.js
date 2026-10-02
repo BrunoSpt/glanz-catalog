@@ -44,8 +44,6 @@ export default function (eleventyConfig) {
   const availableFirst = (products) => [...products].sort((a, b) => Number(!!a.soldOut) - Number(!!b.soldOut));
   eleventyConfig.addFilter("byCategory", (products, slug) => availableFirst(products.filter((p) => p.category === slug)));
   eleventyConfig.addFilter("available", (products) => products.filter((p) => !p.soldOut));
-  // products | flagged("isNew") -> products with isNew: true
-  eleventyConfig.addFilter("flagged", (products, key) => products.filter((p) => p[key] === true));
   eleventyConfig.addFilter("related", (products, product, limit = 4) =>
     availableFirst(products.filter((p) => p.category === product.category && p.name !== product.name)).slice(0, limit)
   );

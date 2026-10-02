@@ -9,7 +9,6 @@
   },
 }
 ---
-{%- from "partials/product-card.njk" import productCard %}
 {%- from "partials/icons.njk" import icon %}
   {% include "partials/category-circles.njk" %}
 
@@ -42,18 +41,6 @@
   <section class="container section-tight" aria-label="Garantias">
     {% include "partials/guarantees.njk" %}
   </section>
-
-  {%- set newArrivals = products | available | flagged("isNew") %}
-  {%- if newArrivals | length %}
-  <section class="container home-section" aria-labelledby="novidades">
-    <h2 class="section-title serif" id="novidades">Novidades</h2>
-    <div class="product-grid">
-      {%- for product in newArrivals %}
-      {{ productCard(product, site.name) }}
-      {%- endfor %}
-    </div>
-  </section>
-  {%- endif %}
 
   <section class="container home-section how-to-buy" id="como-comprar" aria-labelledby="como-comprar-title">
     <h2 class="section-title serif" id="como-comprar-title">Como comprar</h2>

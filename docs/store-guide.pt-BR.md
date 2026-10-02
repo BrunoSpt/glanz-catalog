@@ -15,7 +15,7 @@ Os dados do catálogo ficam em arquivos na pasta `src/_data/`:
 | `howToBuy.json`      | Os passos da seção "Como comprar" da página inicial |
 | `storePolicies.json` | Formas de pagamento, parcelamento, entrega e garantia |
 
-Depois que uma alteração é salva no GitHub (dá pra editar direto pelo site do GitHub, clicando no arquivo e no ícone de lápis), o site é **gerado e publicado sozinho em 1 a 2 minutos**.
+Depois que uma alteração é salva no GitHub (dá pra editar direto pelo site do GitHub, clicando no arquivo e no ícone de lápis), o site é **gerado, testado e publicado sozinho em uns 3 minutos**. Para publicar mudanças feitas no computador, veja [Publicar pelo computador (Git)](#publicar-pelo-computador-git).
 
 Se houver algum erro no arquivo (uma vírgula faltando, uma categoria escrita errado, uma foto que não existe), **o site não é atualizado e continua no ar como estava**. Na aba **Actions** do GitHub aparece um X vermelho; clicando nele, a mensagem mostra exatamente qual peça e qual campo estão com problema.
 
@@ -34,14 +34,13 @@ Cada peça é uma linha no `src/_data/products.json`:
 | `price`    | Preço com **ponto** como separador decimal (`49.90`). O site mostra como `R$ 49,90`. |
 | `photos`   | Lista de fotos da peça (os arquivos ficam na pasta `src/assets/products/`). Com mais de uma foto, o card vira um carrossel. Lista vazia (`[]`) mostra "Foto em breve". |
 | `compareAtPrice` | Opcional. Preço antigo, para promoções. Precisa ser maior que o `price`. Mostra o selo "Promoção" e o preço antigo riscado. |
-| `isNew`    | Opcional. `true` mostra o selo "Novidade" e coloca a peça na seção "Novidades" da página inicial. Use para peças que chegam **no meio** do ciclo de 2 meses (numa coleção nova, todas as peças são novas). |
-| `soldOut`  | Opcional. `true` marca a peça como **vendida**: aparece o selo "Vendida", a peça vai para o fim da lista, sai das Novidades e não pode mais ser adicionada à lista de interesse. |
+| `soldOut`  | Opcional. `true` marca a peça como **vendida**: aparece o selo "Vendida", a peça vai para o fim da lista e não pode mais ser adicionada à lista de interesse. |
 | `sample`   | Opcional. `true` mostra o selo "Exemplo" (peças de demonstração). Apague quando a peça for real. |
 
-Exemplo de peça em promoção e na seção de novidades:
+Exemplo de peça em promoção:
 
 ```json
-{ "name": "Anel Infinito", "category": "rings", "price": 39.90, "compareAtPrice": 47.90, "isNew": true, "photos": ["assets/products/anel-infinito.webp"] }
+{ "name": "Anel Infinito", "category": "rings", "price": 39.90, "compareAtPrice": 47.90, "photos": ["assets/products/anel-infinito.webp"] }
 ```
 
 ### Página de cada peça
@@ -175,3 +174,54 @@ O botão "Perguntar no Direct" de cada peça:
 - abre a conversa com a loja (no celular, abre o app do Instagram);
 - tenta já deixar escrita a mensagem "Olá! Tenho interesse na peça: …", com o link da página da peça. O Instagram nem sempre faz isso;
 - por isso, também copia essa mensagem e avisa "Mensagem copiada — é só colar no Direct".
+
+## Publicar pelo computador (Git)
+
+Quando as mudanças são feitas no computador (por exemplo, depois do `npm run images`), elas só vão para o site depois de chegar à branch `main` do GitHub. Os comandos abaixo são digitados no terminal, dentro da pasta do projeto.
+
+Antes de publicar, confira se está tudo certo:
+
+```bash
+npm test
+```
+
+### Mudança simples, direto na `main`
+
+```bash
+git add .
+git commit -m "Update ring prices"
+git push
+```
+
+A mensagem do commit (entre aspas) descreve a mudança, em inglês, como o resto do projeto.
+
+### Mudança feita numa branch
+
+Uma branch é uma cópia separada do projeto, usada para preparar uma mudança sem mexer na `main`. Para ver em qual branch você está, use `git status` (primeira linha). Com a mudança pronta numa branch, por exemplo `remove-new-badge`:
+
+1. Salvar a mudança (commit) na branch:
+   ```bash
+   git add .
+   git commit -m "Remove the Novidade badge"
+   ```
+2. Voltar para a `main` e trazer a mudança para ela (merge):
+   ```bash
+   git switch main
+   git merge remove-new-badge
+   ```
+3. Enviar para o GitHub, o que publica o site:
+   ```bash
+   git push
+   ```
+4. Apagar a branch, que já não é mais necessária:
+   ```bash
+   git branch -d remove-new-badge
+   ```
+   Se a branch também tiver sido enviada ao GitHub, apague a cópia de lá:
+   ```bash
+   git push origin --delete remove-new-badge
+   ```
+
+O `-d` só apaga a branch se a mudança já estiver na `main`, então não há risco de perder trabalho.
+
+Depois do `git push`, acompanhe na aba **Actions** do GitHub: o site é testado e publicado em uns 3 minutos. Se aparecer um X vermelho, nada foi publicado e o site continua como estava.

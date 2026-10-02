@@ -18,8 +18,8 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Instagram Direct integration:** each product opens a Direct chat with a pre-written message naming the piece and linking to its page. Instagram doesn't always honor pre-filled text, so the message is also copied to the clipboard, with a toast telling the customer to paste it.
 - **Unique pieces, rotating collection:** every piece is one of a kind and the collection is replaced every two months. Sold pieces stay visible as "Vendida" (listed last, can't be added to the list); interest lists saved on customers' phones automatically drop pieces that were sold or left the collection; links to past pieces land on a "piece no longer available" page that shows what is available now; the home page shows the current collection ("coleção de setembro e outubro"), worked out in the browser from the date, so it rolls over every two months with no manual update.
 - **Store policies:** payment methods, interest-free installment rules, delivery and warranty live in `storePolicies.json`; product pages show the installment plan for their price and the interest list shows the total with its plan, all from the same rules (`js/installments.js`, shared by the build and the browser).
-- **Badges:** "Novidade", "Promoção" (with the original price struck through) and "Vendida", driven by product fields.
-- **Home page:** category shortcuts styled like Instagram story highlights, highlights carousel, guarantees, a "Novidades" section and a "Como comprar" guide.
+- **Badges:** "Promoção" (with the original price struck through) and "Vendida", driven by product fields.
+- **Home page:** category shortcuts styled like Instagram story highlights, highlights carousel, guarantees, the current collection notice and a "Como comprar" guide.
 - **Carousels:** home highlights with autoplay that pauses on interaction (one slide per view on phones, several on desktop); swipeable photo carousels on product cards.
 - **Responsive layout:** two-column grid on phones, three on tablets and four on desktop; product pages switch to a two-column layout on larger screens.
 - **Link previews:** Open Graph tags and a 1200×630 share image on every page.
@@ -96,8 +96,7 @@ eleventy.config.js         Eleventy configuration and template filters
 | `price`    | Number in BRL, rendered as `R$ 49,90`. |
 | `photos`   | Image paths relative to `src/`. More than one turns the card into a swipeable carousel; empty shows a placeholder. |
 | `compareAtPrice` | Optional. Original price, greater than `price`; shows the "Promoção" badge and strikes it through. |
-| `isNew`    | Optional. `true` shows "Novidade" and lists the product under "Novidades" on the home page. |
-| `soldOut`  | Optional. `true` marks the piece as sold: "Vendida" badge, listed last, excluded from "Novidades" and from interest lists. |
+| `soldOut`  | Optional. `true` marks the piece as sold: "Vendida" badge, listed last and excluded from interest lists. |
 | `sample`   | Optional. `true` shows an "Exemplo" badge for demo items. |
 
 Product page URLs are derived from the name (`Brinco Coração Cristal` → `/products/brinco-coracao-cristal/`), so names must be unique; the validation enforces it.

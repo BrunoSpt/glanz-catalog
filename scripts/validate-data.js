@@ -10,8 +10,8 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const SRC = path.join(ROOT, "src");
 const DATA = path.join(SRC, "_data");
 
-const PRODUCT_FIELDS = new Set(["name", "category", "price", "compareAtPrice", "photos", "sample", "isNew", "soldOut"]);
-const BOOLEAN_FIELDS = ["sample", "isNew", "soldOut"];
+const PRODUCT_FIELDS = new Set(["name", "category", "price", "compareAtPrice", "photos", "sample", "soldOut"]);
+const BOOLEAN_FIELDS = ["sample", "soldOut"];
 
 function readJson(file, errors) {
   const fullPath = path.join(DATA, file);

@@ -96,16 +96,12 @@ test("category pages list their products with formatted prices", async ({ page }
   }
 });
 
-test("home shows new arrivals from the data", async ({ page }) => {
+test("home shows the collection, guarantees and steps from the data", async ({ page }) => {
   await page.goto("");
   // the current 2-month cycle is worked out in the browser from today's date
   await expect(page.locator(".collection-note")).toHaveText(`${site.collection.note} · ${collectionText(new Date(), site.collection)}`);
   // home strip shows every guarantee, including the home-only ones
   await expect(page.locator(".section-tight .guarantees li")).toHaveCount(site.guarantees.length);
-  const expected = products.filter((p) => p.isNew && !p.soldOut).length; // sold pieces aren't "new"
-  const section = page.locator('section[aria-labelledby="novidades"]');
-  if (expected) await expect(section.locator(".card")).toHaveCount(expected);
-  else await expect(section).toHaveCount(0);
   await expect(page.locator("#como-comprar .step")).toHaveCount(data("howToBuy.json").length);
 });
 

@@ -70,7 +70,7 @@ function formatProduct(p) {
   const parts = [`"name": ${JSON.stringify(p.name)}`, `"category": "${p.category}"`, `"price": ${p.price.toFixed(2)}`];
   if ("compareAtPrice" in p) parts.push(`"compareAtPrice": ${p.compareAtPrice.toFixed(2)}`);
   parts.push(`"photos": [${p.photos.map((photo) => JSON.stringify(photo)).join(", ")}]`);
-  for (const key of ["sample", "isNew", "soldOut"]) {
+  for (const key of ["sample", "soldOut"]) {
     if (key in p) parts.push(`"${key}": ${JSON.stringify(p[key])}`);
   }
   return `  { ${parts.join(", ")} }`;
