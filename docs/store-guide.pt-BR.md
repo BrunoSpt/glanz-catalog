@@ -179,21 +179,34 @@ O botão "Perguntar no Direct" de cada peça:
 
 Quando as mudanças são feitas no computador (por exemplo, depois do `npm run images`), elas só vão para o site depois de chegar à branch `main` do GitHub. Os comandos abaixo são digitados no terminal, dentro da pasta do projeto.
 
+### Antes de alterar qualquer arquivo
+
+Sempre que for começar uma mudança, siga estes três passos:
+
+1. Ver em qual branch você está e se há algo pendente:
+   ```bash
+   git status
+   ```
+   A primeira linha deve mostrar `main`, e o final deve dizer "nothing to commit, working tree clean". Se aparecerem arquivos modificados, é uma mudança anterior que ainda não foi salva: faça o commit dela antes de começar outra, para as duas não se misturarem.
+2. Atualizar a `main` com o que está no GitHub (importante principalmente se algo foi editado pelo site do GitHub):
+   ```bash
+   git switch main
+   git pull
+   ```
+3. Criar uma branch nova para a mudança, com um nome curto em inglês e com hífens, que diga o que vai mudar:
+   ```bash
+   git switch -c update-prices
+   ```
+
+Depois disso, faça as alterações e siga a seção [Mudança feita numa branch](#mudança-feita-numa-branch) para publicar.
+
+### Conferir antes de publicar
+
 Antes de publicar, confira se está tudo certo:
 
 ```bash
 npm test
 ```
-
-### Mudança simples, direto na `main`
-
-```bash
-git add .
-git commit -m "Update ring prices"
-git push
-```
-
-A mensagem do commit (entre aspas) descreve a mudança, em inglês, como o resto do projeto.
 
 ### Mudança feita numa branch
 
@@ -204,6 +217,7 @@ Uma branch é uma cópia separada do projeto, usada para preparar uma mudança s
    git add .
    git commit -m "Remove the Novidade badge"
    ```
+   A mensagem do commit (entre aspas) descreve a mudança, em inglês, como o resto do projeto.
 2. Voltar para a `main` e trazer a mudança para ela (merge):
    ```bash
    git switch main
