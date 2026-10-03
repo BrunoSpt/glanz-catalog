@@ -10,7 +10,7 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 ## Features
 
 - **Static site generated with [Eleventy](https://www.11ty.dev/):** one shared layout and one category template generate every page, so header, navigation and metadata live in a single place.
-- **Data-driven catalog:** products, categories, home highlights and site settings are JSON files in `src/_data/`. Product cards are rendered at build time, so pages show the catalog immediately without waiting for JavaScript.
+- **Data-driven catalog:** products, categories, the home hero photo and site settings are JSON files in `src/_data/`. Product cards are rendered at build time, so pages show the catalog immediately without waiting for JavaScript.
 - **Data validation:** every build checks the catalog data (JSON syntax, unknown fields, categories, prices, missing photos) and fails with a clear message, locally and in CI.
 - **Product pages:** every product gets its own shareable page (`/products/<name>/`) with a photo gallery, full-screen zoom, store guarantees, related products and a share button (native share sheet on phones, copy link elsewhere).
 - **Sort and filter:** category pages open in alphabetical order; customers can sort by price and filter by availability, sale and price range. Price ranges follow the installment thresholds ("Até R$ 80", "R$ 80 a R$ 130"…), so a budget filter also tells the number of installments. Only filters that change something on that page are shown. The choice is kept in the address (`?ordem=menor-preco&preco=80-130`), so it survives a reload and the store can send a filtered link. The order rules (`js/catalog-order.js`) are shared by the build and the browser.
@@ -20,8 +20,8 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 - **Unique pieces, rotating collection:** every piece is one of a kind and the collection is replaced every two months. Sold pieces stay visible as "Vendida" (listed last, can't be added to the list); interest lists saved on customers' phones automatically drop pieces that were sold or left the collection; links to past pieces land on a "piece no longer available" page that shows what is available now; the home page shows the current collection ("coleção de setembro e outubro"), worked out in the browser from the date, so it rolls over every two months with no manual update.
 - **Store policies:** payment methods, interest-free installment rules, delivery and warranty live in `storePolicies.json`; product pages show the installment plan for their price and the interest list shows the total with its plan, all from the same rules (`js/installments.js`, shared by the build and the browser).
 - **Badges:** "Promoção" (with the original price struck through) and "Vendida", driven by product fields.
-- **Home page:** category shortcuts styled like Instagram story highlights, highlights carousel, guarantees, the current collection notice and a "Como comprar" guide.
-- **Carousels:** home highlights with autoplay that pauses on interaction (one slide per view on phones, several on desktop); swipeable photo carousels on product cards.
+- **Home page:** a campaign photo (or several, taking turns slowly; autoplay waits while the customer interacts and is off with reduced motion) with the current collection as the headline, category shortcuts styled like Instagram story highlights, one row of available pieces per category (swipeable on phones, four side by side on desktop), guarantees and a "Como comprar" guide.
+- **Photo-first cards:** product cards are the photo, name and price, with a quiet Instagram Direct link; swipeable when a piece has several photos. The product page has the prominent Direct button.
 - **Responsive layout:** two-column grid on phones, three on tablets and four on desktop; product pages switch to a two-column layout on larger screens.
 - **Link previews:** Open Graph tags and a 1200×630 share image on every page.
 - **Performance:** WebP images, explicit image dimensions to avoid layout shift, small vanilla JS modules and no runtime dependencies.
@@ -37,7 +37,7 @@ src/
     site.json              Site URL, name, Instagram username, share image
     categories.json        Category slug, label and description
     products.json          Products
-    highlights.json        Home carousel slides
+    hero.json              Home page hero photos (more than one: a slow carousel)
     howToBuy.json          "Como comprar" steps
     storePolicies.json     Payment methods, installments, delivery and warranty
   _includes/
@@ -55,7 +55,8 @@ src/
   css/styles.css
   js/
     main.js                Entry point
-    carousel.js            Card, gallery and home carousels
+    carousel.js            Card and gallery photo carousels
+    hero-carousel.js       Home hero photos taking turns
     catalog-tools.js       Sort and filter on the category pages
     catalog-order.js       Product order and price ranges (also used by the build)
     interest-list.js       Interest list (localStorage + drawer)
@@ -70,11 +71,11 @@ src/
     toast.js               Toast notification
   assets/
     brand/                 Logo, icons, favicon, share image
-    highlights/            Home carousel photos that aren't of a single product
+    highlights/            Home hero photos that aren't of a single product
     products/              Product photos (WebP)
 lib/slugify.js             Product name → URL slug (shared by build and validation)
 scripts/validate-data.js   Catalog data validation (runs before every build)
-scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; registers products (price from the file name) and prints highlights.json lines
+scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; registers products (price from the file name) and prints hero.json lines
 tests/
   e2e/catalog.spec.js      End-to-end tests (Playwright)
   serve-site.js            Serves _site/ like Cloudflare Pages for the tests
@@ -89,7 +90,7 @@ eleventy.config.js         Eleventy configuration and template filters
 `src/_data/products.json` is a list of products:
 
 ```json
-{ "name": "Brinco Coração Cristal", "category": "earrings", "price": 49.90, "photos": ["assets/products/heart-earring.webp"] }
+{ "name": "Anel Laço", "category": "rings", "price": 143.00, "photos": ["assets/products/rings/anel-laco.webp"] }
 ```
 
 | Field      | Description |
@@ -102,7 +103,7 @@ eleventy.config.js         Eleventy configuration and template filters
 | `soldOut`  | Optional. `true` marks the piece as sold: "Vendida" badge, listed last and excluded from interest lists. |
 | `sample`   | Optional. `true` shows an "Exemplo" badge for demo items. |
 
-Product page URLs are derived from the name (`Brinco Coração Cristal` → `/products/brinco-coracao-cristal/`), so names must be unique; the validation enforces it.
+Product page URLs are derived from the name (`Anel Laço` → `/products/anel-laco/`), so names must be unique; the validation enforces it.
 
 Adding a category only requires a new entry in `categories.json` (an optional `image` shows in its home shortcut); its page is generated automatically.
 

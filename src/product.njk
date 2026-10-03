@@ -4,6 +4,7 @@
   pagination: { data: "products", size: 1, alias: "product" },
   permalink: "{{ product | productUrl }}index.html",
   ogType: "product",
+  hideFloatingDirect: true,
   eleventyComputed: {
     title: (data) => `${data.product.name} — ${data.site.name}`,
     description: (data) => {
@@ -18,9 +19,7 @@
 {%- from "partials/product-card.njk" import productCard, badges, price, listToggle, directButton %}
 {%- from "partials/icons.njk" import icon %}
 {%- set category = categories | categoryOf(product.category) %}
-{%- set currentSlug = category.slug %}
 {%- set relatedItems = products | related(product) %}
-  {% include "partials/category-chips.njk" %}
 
   <nav class="breadcrumb container" aria-label="Você está em">
     <a href="/">Catálogo</a> <span aria-hidden="true">›</span>
@@ -53,7 +52,6 @@
     </div>
 
     <div class="detail-info">
-      <p class="kicker">{{ category.label }}</p>
       <h1 class="serif">{{ product.name }}</h1>
       {{ price(product) }}
       {%- set plan = product.price | installment %}

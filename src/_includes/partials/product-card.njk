@@ -34,20 +34,23 @@
 </button>
 {%- endmacro -%}
 
-{%- macro directButton(product, label = "Perguntar no Direct", className = "btn btn-direct") -%}
+{%- macro directButton(product, label = "Perguntar no Direct", className = "btn btn-primary") -%}
 {%- set message = product | directMessage -%}
 <a class="{{ className }}" href="{{ message | directLink }}" data-message="{{ message }}" target="_blank" rel="noopener">{{ icon("instagram") }} {{ label }}</a>
 {%- endmacro -%}
 
-{%- macro productCard(product, siteName) -%}
+{#- singlePhoto: home rows scroll sideways, so their cards show only the first photo
+    (a photo carousel inside a scrolling row would fight the row's own swipe) #}
+{%- macro productCard(product, siteName, singlePhoto = false) -%}
 {%- set url = product | productUrl -%}
+{%- set photos = product.photos.slice(0, 1) if singlePhoto else product.photos -%}
 {#- data-name / data-price-value / data-sale are read by js/catalog-tools.js to sort and filter #}
 <article class="card{% if product.soldOut %} is-sold-out{% endif %}" data-name="{{ product.name }}" data-price-value="{{ product.price }}"{% if product.compareAtPrice %} data-sale{% endif %}>
   <div class="card-media">
     <a class="carousel" href="{{ url }}" aria-label="Ver detalhes: {{ product.name }}">
-      {%- if product.photos | length %}
-      {%- for photo in product.photos %}
-      <div class="slide"><img src="/{{ photo }}" alt="{{ product.name }}{% if product.photos | length > 1 %} — foto {{ loop.index }}{% endif %} — {{ siteName }}" loading="lazy"></div>
+      {%- if photos | length %}
+      {%- for photo in photos %}
+      <div class="slide"><img src="/{{ photo }}" alt="{{ product.name }}{% if photos | length > 1 %} — foto {{ loop.index }}{% endif %} — {{ siteName }}" loading="lazy"></div>
       {%- endfor %}
       {%- else %}
       <div class="slide placeholder"><img src="/assets/brand/sunburst.png" width="160" height="165" alt=""><span>Foto em breve</span></div>
@@ -63,7 +66,7 @@
   <div class="info">
     <h3 class="name serif"><a href="{{ url }}">{{ product.name }}</a></h3>
     {{ price(product) }}
-    {{ directButton(product) }}
+    {{ directButton(product, "Perguntar no Direct", "card-direct") }}
   </div>
 </article>
 {%- endmacro -%}

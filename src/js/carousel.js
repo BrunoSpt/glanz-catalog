@@ -1,4 +1,4 @@
-// Carousels: photo carousels on product cards and the autoplay highlights carousel on the home page
+// Photo carousels on product cards and the product page gallery: dots follow the visible photo
 
 function createDots(container, count){
   for(let i = 0; i < count; i++){
@@ -26,56 +26,4 @@ export function initCardCarousel(card){
   }, { root: carousel, threshold: 0.6 });
 
   slides.forEach(slide => observer.observe(slide));
-}
-
-// Home highlights: autoplay that pauses while the user interacts.
-// One slide per view on phones; two or three side by side on larger screens (see CSS).
-export function initHeroCarousel(track, dotsWrap){
-  const slides = Array.from(track.querySelectorAll('.slide'));
-
-  let index = 0;
-  let paused = false;
-  let resumeTimer = null;
-  let dots = [];
-  let positions = 1; // how many different scroll positions exist
-
-  const step = () => slides.length > 1 ? slides[1].offsetLeft - slides[0].offsetLeft : track.clientWidth;
-
-  function layout(){
-    const visible = Math.max(1, Math.round(track.clientWidth / step()));
-    positions = Math.max(1, slides.length - visible + 1);
-    dotsWrap.replaceChildren();
-    dots = createDots(dotsWrap, positions);
-    index = Math.min(index, positions - 1);
-    setActiveDot(dots, index);
-  }
-
-  function goTo(i){
-    index = (i + positions) % positions;
-    track.scrollTo({ left: index * step(), behavior: 'smooth' });
-    setActiveDot(dots, index);
-  }
-
-  layout();
-  window.addEventListener('resize', layout);
-
-  // No automatic slide changes for users who enabled "reduce motion"
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!reduceMotion){
-    setInterval(() => {
-      if(!paused) goTo(index + 1);
-    }, 3200);
-  }
-
-  // Pause autoplay while the user interacts; resume after a moment of inactivity
-  track.addEventListener('pointerdown', () => {
-    paused = true;
-    clearTimeout(resumeTimer);
-  });
-  track.addEventListener('scroll', () => {
-    index = Math.min(positions - 1, Math.round(track.scrollLeft / step()));
-    setActiveDot(dots, index);
-    clearTimeout(resumeTimer);
-    resumeTimer = setTimeout(() => { paused = false; }, 4000);
-  }, { passive: true });
 }

@@ -13,7 +13,7 @@ Os dados do catálogo ficam em arquivos na pasta `src/_data/`:
 | `products.json`      | As peças (nome, categoria, preço, fotos) |
 | `site.json`          | Usuário do Instagram, cidade, frase da home, aviso da coleção, garantias e endereço do site |
 | `categories.json`    | Nome, descrição e foto (opcional) de cada categoria |
-| `highlights.json`    | As fotos do carrossel da página inicial |
+| `hero.json`          | A foto (ou as fotos, em carrossel) do topo da página inicial |
 | `howToBuy.json`      | Os passos da seção "Como comprar" da página inicial |
 | `storePolicies.json` | Formas de pagamento, parcelamento, entrega e garantia |
 
@@ -26,7 +26,7 @@ Se houver algum erro no arquivo (uma vírgula faltando, uma categoria escrita er
 Cada peça é uma linha no `src/_data/products.json`:
 
 ```json
-{ "name": "Brinco Coração Cristal", "category": "earrings", "price": 49.90, "photos": ["assets/products/heart-earring.webp"] }
+{ "name": "Anel Laço", "category": "rings", "price": 143.00, "photos": ["assets/products/rings/anel-laco.webp"] }
 ```
 
 | Campo      | O que é |
@@ -47,7 +47,7 @@ Exemplo de peça em promoção:
 
 ### Página de cada peça
 
-Cada peça ganha uma página própria, com endereço criado a partir do nome. Por exemplo, "Brinco Coração Cristal" fica em `…/products/brinco-coracao-cristal/`. Esse link pode ser enviado para clientes ou usado nos stories.
+Cada peça ganha uma página própria, com endereço criado a partir do nome. Por exemplo, "Anel Laço" fica em `…/products/anel-laco/`. Esse link pode ser enviado para clientes ou usado nos stories.
 
 - **Não repita nomes:** duas peças com o mesmo nome teriam o mesmo endereço, e o site acusa esse erro.
 - **Mudar o nome muda o link:** links antigos que já foram enviados deixam de funcionar.
@@ -85,7 +85,7 @@ Quando as peças não vendidas voltam para o fornecedor e chegam as novas:
 
 1. **Fotos:** apague da pasta `src/assets/products/` as fotos das peças que foram embora e prepare as novas com `npm run images` (veja "Fotos" abaixo).
 2. **Peças:** no `src/_data/products.json`, apague as linhas das peças que foram embora (incluindo as vendidas) e cadastre as novas.
-3. **Carrossel da página inicial:** no `src/_data/highlights.json`, troque as fotos de destaque pelas da coleção nova. Cada destaque tem a foto (`image`), a largura e a altura dela em pixels (`width` e `height`), uma descrição (`alt`) e o texto que aparece sobre a foto (`caption`).
+3. **Fotos do topo da página inicial:** se quiser fotos novas para a coleção, troque o `src/_data/hero.json`. Ele é uma lista entre colchetes `[ ]`, com uma linha por foto: a foto (`image`), a largura e a altura dela em pixels (`width` e `height`) e uma descrição (`alt`). Com uma foto, ela fica parada; com mais de uma, as fotos vão trocando sozinhas a cada 5 segundos (a cliente também pode deslizar ou tocar nas bolinhas). Use fotos no mesmo estilo, de preferência de campanha (modelo usando as peças), para o topo não parecer uma colagem. O título ao lado da foto ("Coleção de setembro e outubro") muda sozinho. As fileiras de peças da página inicial também se atualizam sozinhas: cada categoria mostra até 8 peças disponíveis, na ordem do cadastro, e o link "Ver todos".
 4. **Categorias:** se a foto de alguma categoria no `src/_data/categories.json` (campo `image`) era de uma peça que foi embora, troque por uma foto nova ou apague o campo.
 5. **Salve** as alterações. Se algo estiver errado (por exemplo, uma peça apontando para uma foto que foi apagada), o site não é atualizado e a aba **Actions** do GitHub mostra o problema.
 
@@ -117,7 +117,7 @@ Esses textos ficam no `src/_data/storePolicies.json` e aparecem na seção "Como
 
 O jeito mais fácil é deixar o projeto converter as fotos sozinho:
 
-1. Coloque as fotos originais na pasta `photos-inbox/` (na pasta principal do projeto), **separadas por categoria**: `photos-inbox/Anéis/`, `photos-inbox/Brincos/`, `photos-inbox/Colares/`, `photos-inbox/Pulseiras/` ou `photos-inbox/Pingentes/`. Fotos para o carrossel da página inicial que não são de uma peça só (modelo usando as joias, composições, fotos de campanha) vão em `photos-inbox/Destaques/`. Pode ser JPG, PNG ou WebP, de qualquer tamanho.
+1. Coloque as fotos originais na pasta `photos-inbox/` (na pasta principal do projeto), **separadas por categoria**: `photos-inbox/Anéis/`, `photos-inbox/Brincos/`, `photos-inbox/Colares/`, `photos-inbox/Pulseiras/` ou `photos-inbox/Pingentes/`. Fotos para o topo da página inicial, que normalmente não são de uma peça só (modelo usando as joias, composições, fotos de campanha), vão em `photos-inbox/Destaques/`. Pode ser JPG, PNG ou WebP, de qualquer tamanho.
 2. **Dê a cada foto o nome da peça e o preço**, separados por ` - ` (espaço, traço, espaço):
    - `Anel Laço - 59,90.jpg`: peça "Anel Laço", R$ 59,90.
    - `Anel Laço (2).jpg`: segunda foto da mesma peça (a primeira foto é a capa).
@@ -126,11 +126,11 @@ O jeito mais fácil é deixar o projeto converter as fotos sozinho:
    Pode ter acento, espaço e hífen no nome ("Arco-Íris"). O preço aceita `175`, `59,90`, `59.90` ou `R$ 59,90`. O que separa o nome do preço é o traço **com espaço dos dois lados**; se o celular trocar o traço por um travessão (`–`), também funciona.
 3. No terminal, rode `npm run images`.
 
-O comando converte cada foto para WebP, reduz para 1200 px de largura, corrige a rotação das fotos de celular, cria um nome de arquivo limpo (`anel-laco.webp`) e salva em `src/assets/products/<categoria>/` (ou em `src/assets/highlights/`, no caso dos destaques). As originais vão para `photos-inbox/processed/` (essa pasta não vai para o site nem para o GitHub).
+O comando converte cada foto para WebP, reduz para 1200 px de largura, corrige a rotação das fotos de celular, cria um nome de arquivo limpo (`anel-laco.webp`) e salva em `src/assets/products/<categoria>/` (ou em `src/assets/highlights/`, no caso das fotos de destaque). As originais vão para `photos-inbox/processed/` (essa pasta não vai para o site nem para o GitHub).
 
 **As peças são cadastradas sozinhas** no `src/_data/products.json`, na categoria da pasta. Se já existir uma peça com o mesmo nome, ela não é duplicada: a foto nova é acrescentada a ela e, se o nome do arquivo tiver preço, o preço é atualizado. No fim, o terminal lista as peças novas, as atualizadas e as que estão **sem preço**: enquanto alguma estiver com preço 0, o site não é publicado.
 
-Para os destaques, ele mostra as linhas para colar no `src/_data/highlights.json`, já com a largura e a altura da foto. Troque o `"alt"` por uma descrição da foto (por exemplo, "Modelo usando colar dourado com pingente de coração"; ela é lida por leitores de tela e ajuda no Google) e, se quiser, escreva um `"caption"`, o texto que aparece sobre a foto. Se a foto do carrossel for de uma peça do catálogo, não precisa convertê-la de novo: aponte direto para a foto da peça, como `"assets/products/rings/anel-laco.webp"`.
+Para as fotos de destaque, ele mostra as linhas para colar no `src/_data/hero.json`, entre os colchetes, já com a largura e a altura da foto. As linhas são separadas por vírgula, mas a última antes do `]` não leva vírgula; se faltar ou sobrar uma, o site acusa o erro e não é publicado. Troque o `"alt"` por uma descrição da foto (por exemplo, "Modelo usando colar dourado com pingente de coração"; ela é lida por leitores de tela e ajuda no Google). Se a foto do topo for de uma peça do catálogo, não precisa convertê-la de novo: aponte direto para a foto da peça, como `"assets/products/rings/anel-laco.webp"`.
 
 Ele também avisa quando uma foto não está em pé (4:5), porque ela vai ser cortada nos cards, ou quando é pequena demais.
 

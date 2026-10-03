@@ -42,11 +42,6 @@
       <span class="word">GLANZ</span>
     </a>
     <div class="header-actions">
-      {%- if headerLink == "instagram" %}
-      <a class="back-link" href="{{ '' | directLink }}" target="_blank" rel="noopener">Instagram →</a>
-      {%- else %}
-      <a class="back-link" href="/">← Catálogo</a>
-      {%- endif %}
       <button class="search-button" type="button" data-search-open aria-label="Buscar peças">{{ icon("search") }}</button>
       <button class="list-button" type="button" data-list-open aria-label="Abrir lista de interesse">
         {{ icon("heart") }}<span class="list-count" data-list-count hidden>0</span>
@@ -61,13 +56,17 @@
 
 <footer class="site-footer">
   <img class="mark" src="/assets/brand/glanz-mark.webp" width="607" height="450" alt="{{ site.name }}">
-  <p>@{{ site.instagram }} · {{ site.city }}</p>
+  <p><a href="{{ '' | directLink }}" target="_blank" rel="noopener">@{{ site.instagram }}</a></p>
+  <p>{{ site.city }}</p>
   <p><a href="/#como-comprar">Como comprar</a></p>
 </footer>
 
+{#- Product pages have their own large Direct button, so the floating one would only cover content #}
+{%- if not hideFloatingDirect %}
 <a class="ig-float" href="{{ '' | directLink }}" target="_blank" rel="noopener" aria-label="Falar no Instagram Direct">
   {{ icon("instagram") }}
 </a>
+{%- endif %}
 
 {#- Search: js/search.js filters the catalog index below as the customer types #}
 <dialog class="search-dialog" id="search" aria-labelledby="searchTitle">
