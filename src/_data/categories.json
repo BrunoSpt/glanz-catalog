@@ -1,7 +1,7 @@
 [
   { "slug": "rings", "label": "Anéis", "image": "assets/products/rings/anel-coracao-vazado.webp", "description": "Peças para todos os estilos, do minimalista ao statement." },
-  { "slug": "earrings", "label": "Brincos", "image": "assets/products/heart-earring.webp", "description": "Do delicado ao statement, para todos os momentos." },
-  { "slug": "necklaces", "label": "Colares", "description": "Camadas de brilho para compor o seu look." },
+  { "slug": "earrings", "label": "Brincos", "image": "assets/products/earrings/brinco-cuore-cravejado-m.webp", "description": "Do delicado ao statement, para todos os momentos." },
+  { "slug": "necklaces", "label": "Colares", "image": "assets/products/necklaces/colar-veneziana-com-pingente-coracao-liso.webp", "description": "Camadas de brilho para compor o seu look." },
   { "slug": "bracelets", "label": "Pulseiras", "image": "assets/products/bracelets/pulseira-verao-colors.webp", "description": "Do fino ao statement, para usar sozinha ou combinada." },
   { "slug": "pendants", "label": "Pingentes", "image": "assets/products/pendants/pingente-coracao-espiral-cravejado.webp", "description": "Pequenos detalhes que fazem toda a diferença." }
 ]

@@ -19,9 +19,9 @@
   {% include "partials/category-chips.njk" %}
 
   <section class="page-head container">
-    <p class="kicker">Catálogo · <span data-catalog-count aria-live="polite">{{ total }} {{ "peça" if total == 1 else "peças" }}</span></p>
     <h1 class="serif">{{ category.label }}</h1>
     <p>{{ category.description }}</p>
+    <p class="page-count" data-catalog-count aria-live="polite">{{ total }} {{ "peça" if total == 1 else "peças" }}</p>
   </section>
 
   {#- Sort and filter (js/catalog-tools.js). Only filters that change something are shown;

@@ -4,7 +4,7 @@ import { test, expect } from "@playwright/test";
 import { readFileSync } from "node:fs";
 import { slugify } from "../../lib/slugify.js";
 import { installmentPlan } from "../../src/js/installments.js";
-import { collectionText } from "../../src/js/collection.js";
+import { collectionTitle } from "../../src/js/collection.js";
 import { searchCatalog } from "../../src/js/search.js";
 import { sortProducts, priceRanges, inRange } from "../../src/js/catalog-order.js";
 
@@ -56,7 +56,7 @@ for (const path of pagePaths) {
     await expect
       .poll(() =>
         page.evaluate(() =>
-          [...document.querySelectorAll(".carousel .slide:not(.placeholder) img, .carousel-hero .slide:not(.placeholder) img")].filter(
+          [...document.querySelectorAll(".carousel .slide:not(.placeholder) img")].filter(
             (img) => img.complete && img.naturalWidth > 0 && getComputedStyle(img).opacity !== "1"
           ).length
         ),
@@ -87,7 +87,7 @@ test("category pages list their products with formatted prices", async ({ page }
     const items = inCategory(category.slug);
     await page.goto(`${category.slug}/`);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(category.label);
-    await expect(page.locator(".kicker")).toHaveText(`Catálogo · ${items.length} ${items.length === 1 ? "peça" : "peças"}`);
+    await expect(page.locator("[data-catalog-count]")).toHaveText(`${items.length} ${items.length === 1 ? "peça" : "peças"}`);
     await expect(page.locator(".card")).toHaveCount(items.length);
     if (items.length) {
       const firstPrice = await page.locator(".card .price-current").first().textContent();
@@ -99,10 +99,57 @@ test("category pages list their products with formatted prices", async ({ page }
 test("home shows the collection, guarantees and steps from the data", async ({ page }) => {
   await page.goto("");
   // the current 2-month cycle is worked out in the browser from today's date
-  await expect(page.locator(".collection-note")).toHaveText(`${site.collection.note} · ${collectionText(new Date(), site.collection)}`);
+  await expect(page.locator("h1[data-collection]")).toHaveText(collectionTitle(new Date(), site.collection));
   // home strip shows every guarantee, including the home-only ones
   await expect(page.locator(".section-tight .guarantees li")).toHaveCount(site.guarantees.length);
   await expect(page.locator("#como-comprar .step")).toHaveCount(data("howToBuy.json").length);
+});
+
+const hero = data("hero.json");
+
+test("home hero shows the collection photos; several take turns, one stays still", async ({ page }) => {
+  await page.goto("");
+  await expect(page.locator(".hero-slide img")).toHaveCount(hero.length);
+  const dots = page.locator(".hero-dots button");
+  if (hero.length === 1) {
+    await expect(dots).toHaveCount(0);
+    return;
+  }
+  const visible = () => page.evaluate(() => {
+    const track = document.querySelector(".hero-track");
+    return Math.round(track.scrollLeft / track.clientWidth);
+  });
+  await expect(dots.first()).toHaveAttribute("aria-current", "true");
+  await expect.poll(visible, { timeout: 9000 }).toBe(1); // changes on its own
+  await dots.last().click();
+  await expect.poll(visible).toBe(hero.length - 1);
+  await expect(dots.last()).toHaveAttribute("aria-current", "true");
+});
+
+test("home shows a row of available pieces for each category, linking to the full list", async ({ page }) => {
+  await page.goto("");
+  for (const category of categories) {
+    const available = products.filter((p) => p.category === category.slug && !p.soldOut);
+    const row = page.locator(`section[aria-labelledby="row-${category.slug}"]`);
+    if (!available.length) {
+      await expect(row).toHaveCount(0);
+      continue;
+    }
+    // in registration order, up to 8 (the desktop layout shows the first 4)
+    const expected = available.slice(0, 8).map((p) => p.name);
+    expect((await row.locator(".card .name").allTextContents()).map((n) => n.trim())).toEqual(expected);
+    const all = row.getByRole("link", { name: `Ver todos (${inCategory(category.slug).length})` });
+    await expect(all).toHaveAttribute("href", new RegExp(`/${category.slug}/$`));
+  }
+});
+
+test("product pages keep navigation light: breadcrumb only, no floating Direct button", async ({ page }) => {
+  await page.goto(productPath(productWithPhoto));
+  await expect(page.locator(".breadcrumb")).toBeVisible();
+  await expect(page.locator(".chip-row")).toHaveCount(0);
+  await expect(page.locator(".ig-float")).toHaveCount(0);
+  await page.goto("");
+  await expect(page.locator(".ig-float")).toBeVisible();
 });
 
 test("how to buy explains installments, delivery and warranty", async ({ page }) => {
@@ -247,15 +294,16 @@ test("photo viewer on desktop: wheel and +/- buttons zoom", async ({ page }, tes
   await expect(image).toHaveAttribute("style", /scale\(1\.6\)/);
 });
 
-test("phone details: no blue tap flash, Direct button label on one line", async ({ page }, testInfo) => {
+test("phone details: no blue tap flash, Direct link label on one line", async ({ page }, testInfo) => {
   test.skip(!isPhone(testInfo), "phones only");
   await page.goto(`${categories[0].slug}/`);
   // -webkit-tap-highlight-color only exists in iOS Safari (desktop WebKit ignores it),
   // so check that the published stylesheet turns it off
   const css = await (await page.request.get("css/styles.css")).text();
   expect(css).toMatch(/-webkit-tap-highlight-color:\s*transparent/);
-  const heights = await page.locator(".card .btn-direct").evaluateAll((buttons) => buttons.map((b) => b.getBoundingClientRect().height));
-  for (const height of heights) expect(height).toBeLessThanOrEqual(46); // one line (min-height 44px)
+  const heights = await page.locator(".card .card-direct").evaluateAll((links) => links.map((l) => l.getBoundingClientRect().height));
+  expect(heights.length).toBeGreaterThan(0);
+  for (const height of heights) expect(height).toBeLessThanOrEqual(42); // one line (min-height 40px)
 });
 
 test("category pages open in alphabetical order, with sold pieces last", async ({ page }) => {

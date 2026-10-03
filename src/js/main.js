@@ -1,9 +1,10 @@
 // GLANZ SEMI JOIAS — entry point.
 // Pages are rendered at build time by Eleventy; this script only adds interactivity.
 // Code is in English; every user-facing string stays in Brazilian Portuguese.
-import { initCardCarousel, initHeroCarousel } from './carousel.js';
+import { initCardCarousel } from './carousel.js';
 import { initCatalogTools } from './catalog-tools.js';
 import { initDirectButtons } from './direct-message.js';
+import { initHeroCarousel } from './hero-carousel.js';
 import { initInterestList } from './interest-list.js';
 import { initLightbox } from './lightbox.js';
 import { initNotFound } from './not-found.js';
@@ -16,7 +17,7 @@ import { initShareButtons } from './share.js';
 document.addEventListener('touchstart', () => {}, { passive: true });
 
 // Photos fade in once loaded (see "photos fade in" in styles.css)
-document.querySelectorAll('.carousel img, .carousel-hero img').forEach(img => {
+document.querySelectorAll('.carousel img').forEach(img => {
   const markLoaded = () => img.classList.add('is-loaded');
   if(img.complete) markLoaded();
   else {
@@ -28,10 +29,7 @@ document.querySelectorAll('.carousel img, .carousel-hero img').forEach(img => {
 // Product cards and the product page gallery share the same carousel markup
 document.querySelectorAll('.card, [data-gallery]').forEach(initCardCarousel);
 
-const heroTrack = document.getElementById('heroTrack');
-const heroDots = document.getElementById('heroDots');
-if(heroTrack && heroDots) initHeroCarousel(heroTrack, heroDots);
-
+initHeroCarousel();
 initCatalogTools();
 initDirectButtons();
 initInterestList();

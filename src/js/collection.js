@@ -1,4 +1,4 @@
-// Collection notice on the home page. The collection is replaced every `months` months
+// Collection headline at the top of the home page. The collection is replaced every `months` months
 // starting from `firstCycle` ("2026-09"), so the current cycle is worked out from today's date
 // in the customer's browser — nobody has to update it.
 
@@ -20,11 +20,16 @@ export function collectionText(today, { firstCycle, months }){
   return `coleção de ${joinNames(currentCycle(today, firstCycle, months))}`;
 }
 
+// "Coleção de setembro e outubro", for the headline
+export function collectionTitle(today, cycle){
+  const text = collectionText(today, cycle);
+  return text.charAt(0).toUpperCase() + text.slice(1);
+}
+
 export function initCollectionNote(){
-  const note = document.querySelector('[data-collection]');
-  if(!note) return;
-  const { firstCycle, months } = note.dataset;
-  // Without JavaScript only the note is shown ("Peças únicas")
-  const text = note.querySelector('[data-collection-text]');
-  text.textContent = `${text.textContent} · ${collectionText(new Date(), { firstCycle, months: Number(months) })}`;
+  const el = document.querySelector('[data-collection]');
+  if(!el) return;
+  // Without JavaScript the headline keeps the generic note ("Peças únicas")
+  const { firstCycle, months } = el.dataset;
+  el.textContent = collectionTitle(new Date(), { firstCycle, months: Number(months) });
 }

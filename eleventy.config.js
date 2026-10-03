@@ -46,6 +46,11 @@ export default function (eleventyConfig) {
   // Category pages open in alphabetical order (sold pieces last); customers can re-sort them (js/catalog-tools.js)
   eleventyConfig.addFilter("byCategory", (products, slug) => sortProducts(products.filter((p) => p.category === slug)));
   eleventyConfig.addFilter("available", (products) => products.filter((p) => !p.soldOut));
+  // Home page rows: available pieces of a category in the order they were registered (so the row
+  // isn't always the first letters of the alphabet), up to `limit`
+  eleventyConfig.addFilter("showcase", (products, slug, limit = 8) =>
+    products.filter((p) => p.category === slug && !p.soldOut).slice(0, limit)
+  );
   eleventyConfig.addFilter("related", (products, product, limit = 4) =>
     availableFirst(products.filter((p) => p.category === product.category && p.name !== product.name)).slice(0, limit)
   );

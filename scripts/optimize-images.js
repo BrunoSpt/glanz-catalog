@@ -3,8 +3,8 @@
 // Put the original photos (JPG, PNG, WebP or HEIC, any size) in a subfolder of photos-inbox/:
 //   - one per category — the category slug ("rings") or its Portuguese label
 //     ("Anéis", "Pulseiras", "Pingente"…) — for product photos;
-//   - "Destaques" (or "highlights") for home carousel photos that aren't of a single
-//     piece (a model wearing the jewelry, compositions, campaign shots).
+//   - "Destaques" (or "highlights") for the photo at the top of the home page, usually
+//     not of a single piece (a model wearing the jewelry, compositions, campaign shots).
 //
 // Product photos are named after the piece, optionally with its price and photo number:
 //   "Anel Laço - 59,90.jpg"   -> product "Anel Laço", R$ 59,90
@@ -17,7 +17,7 @@
 //   - saves as WebP (quality 80) in src/assets/products/<category>/ or src/assets/highlights/,
 //   - moves the original to photos-inbox/processed/ so it isn't converted again,
 //   - adds the product to src/_data/products.json (or the photo/price to an existing product).
-// Highlights still need a human-written description, so their highlights.json lines are printed.
+// A highlight still needs a human-written description, so its hero.json line is printed.
 //
 // Messages are in Portuguese: this tool is meant for the store owner.
 import { readdirSync, mkdirSync, renameSync, statSync, existsSync, readFileSync, writeFileSync } from "node:fs";
@@ -110,7 +110,7 @@ async function main() {
   const products = JSON.parse(readFileSync(PRODUCTS_FILE, "utf8"));
 
   // Where the photos of an inbox folder go:
-  // "Destaques" -> home carousel; "Anéis" / "aneis" / "rings" -> rings (singular works too: "Pingente")
+  // "Destaques" -> top of the home page; "Anéis" / "aneis" / "rings" -> rings (singular works too: "Pingente")
   function targetFor(folder) {
     const key = slugify(folder);
     if (["destaques", "destaque", "highlights"].includes(key)) return HIGHLIGHTS;
@@ -168,7 +168,7 @@ async function main() {
         const warnings = [];
         const ratio = original.width / original.height;
         if (Math.abs(ratio - 0.8) > 0.03) {
-          warnings.push(`não está em 4:5 (em pé) e será cortada ${target.kind === "highlight" ? "no carrossel" : "nos cards"}`);
+          warnings.push(`não está em 4:5 (em pé) e será cortada ${target.kind === "highlight" ? "no topo da página inicial" : "nos cards"}`);
         }
         if (original.width < 800) warnings.push(`é pequena (${original.width}px de largura) e pode ficar sem nitidez`);
 
@@ -180,7 +180,7 @@ async function main() {
         const image = `${target.assetPath}/${outputName}`;
         if (target.kind === "highlight") {
           highlightLines.push(
-            `  { "image": "${image}", "width": ${output.width}, "height": ${output.height}, "alt": ${JSON.stringify(name)}, "caption": "" },`
+            `  { "image": "${image}", "width": ${output.width}, "height": ${output.height}, "alt": ${JSON.stringify(name)} },`
           );
           continue;
         }
@@ -226,8 +226,9 @@ async function main() {
     console.log(summary.withoutPrice.map((n) => `  - ${n}`).join("\n"));
   }
   if (highlightLines.length) {
-    console.log(`\nPara o carrossel da página inicial, cole estas linhas no src/_data/highlights.json.`);
-    console.log(`Troque o "alt" por uma descrição da foto e, se quiser, escreva um "caption" (o texto que aparece sobre a foto).\n`);
+    console.log(`\nPara mostrar estas fotos no topo da página inicial, cole as linhas no src/_data/hero.json, entre os colchetes [ ].`);
+    console.log(`Com mais de uma foto, o topo vira um carrossel. Troque o "alt" por uma descrição da foto (ex.: "Modelo usando colar dourado com pingente de coração").`);
+    console.log(`Atenção à vírgula: ela separa as linhas, mas a última linha antes do ] não pode ter vírgula no fim.\n`);
     console.log(highlightLines.join("\n"));
   }
   if (problems) process.exitCode = 1;

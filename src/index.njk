@@ -2,7 +2,6 @@
 {
   layout: "layouts/base.njk",
   permalink: "index.html",
-  headerLink: "instagram",
   eleventyComputed: {
     title: (data) => data.site.title,
     description: (data) => data.site.description,
@@ -10,6 +9,36 @@
 }
 ---
 {%- from "partials/icons.njk" import icon %}
+{%- from "partials/product-card.njk" import productCard %}
+  {#- The one bold moment of the page: the campaign photo and the current collection.
+      js/collection.js swaps the generic note ("Peças únicas") for the current cycle
+      ("Coleção de setembro e outubro"), worked out from today's date. #}
+  <section class="hero">
+    {#- hero.json: one photo, or several taking turns (js/hero-carousel.js); the headline stays put #}
+    {%- set isCarousel = hero | length > 1 %}
+    <div class="hero-photo"{% if isCarousel %} data-hero-carousel aria-roledescription="carrossel" aria-label="Fotos da coleção"{% endif %}>
+      <div class="hero-track">
+        {%- for photo in hero %}
+        <div class="hero-slide"{% if isCarousel %} aria-roledescription="foto" aria-label="{{ loop.index }} de {{ hero | length }}"{% endif %}>
+          <img src="/{{ photo.image }}" width="{{ photo.width }}" height="{{ photo.height }}" alt="{{ photo.alt }}"{% if loop.first %} fetchpriority="high"{% else %} loading="lazy"{% endif %}>
+        </div>
+        {%- endfor %}
+      </div>
+      {%- if isCarousel %}
+      <div class="hero-dots">
+        {%- for photo in hero %}
+        <button type="button" aria-label="Ver foto {{ loop.index }} de {{ hero | length }}"{% if loop.first %} class="active" aria-current="true"{% endif %}></button>
+        {%- endfor %}
+      </div>
+      {%- endif %}
+    </div>
+    <div class="hero-text">
+      <h1 class="serif" data-collection data-first-cycle="{{ site.collection.firstCycle }}" data-months="{{ site.collection.months }}">{{ site.collection.note }}</h1>
+      <p>Cada peça tem um exemplar só. Quando é vendida, não volta.</p>
+      <a class="btn btn-primary" href="#pecas">Ver as peças</a>
+    </div>
+  </section>
+
   {% include "partials/category-circles.njk" %}
 
   {#- Looks like a search field; opens the same search panel as the header magnifier #}
@@ -17,26 +46,26 @@
     <button class="search-shortcut" type="button" data-search-open>{{ icon("search") }} <span>Buscar peças</span></button>
   </div>
 
-  {#- Pieces are unique and the collection is replaced every 2 months #}
-  {#- js/collection.js replaces the generic note with the current cycle ("coleção de setembro e outubro…") #}
-  <p class="collection-note" data-collection
-    data-first-cycle="{{ site.collection.firstCycle }}" data-months="{{ site.collection.months }}">
-    {{ icon("gem") }}
-    <span data-collection-text>{{ site.collection.note }}</span>
-  </p>
-
-  <section class="carousel-hero" aria-label="Destaques do catálogo">
-    <div class="track" id="heroTrack">
-      {%- for item in highlights %}
-      {%- if item.comingSoon %}
-      <div class="slide placeholder"><img src="/assets/brand/sunburst.png" width="160" height="165" alt=""><span>{{ item.comingSoon }}</span></div>
-      {%- else %}
-      <div class="slide"><img src="/{{ item.image }}" width="{{ item.width }}" height="{{ item.height }}" alt="{{ item.alt }}">{% if item.caption %}<span class="caption">{{ item.caption }}</span>{% endif %}</div>
-      {%- endif %}
-      {%- endfor %}
-    </div>
-    <div class="carousel-dots" id="heroDots"></div>
-  </section>
+  {#- One row per category with a few available pieces; the full list is on the category page #}
+  <div class="showcase" id="pecas">
+    {%- for c in categories %}
+    {%- set pieces = products | showcase(c.slug) %}
+    {%- set total = products | byCategory(c.slug) | length %}
+    {%- if pieces | length %}
+    <section class="showcase-row" aria-labelledby="row-{{ c.slug }}">
+      <div class="container showcase-head">
+        <h2 class="section-title serif" id="row-{{ c.slug }}">{{ c.label }}</h2>
+        <a class="showcase-all" href="/{{ c.slug }}/">Ver todos ({{ total }})</a>
+      </div>
+      <div class="showcase-track">
+        {%- for product in pieces %}
+        {{ productCard(product, site.name, true) }}
+        {%- endfor %}
+      </div>
+    </section>
+    {%- endif %}
+    {%- endfor %}
+  </div>
 
   <section class="container section-tight" aria-label="Garantias">
     {% include "partials/guarantees.njk" %}
