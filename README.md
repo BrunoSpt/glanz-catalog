@@ -70,11 +70,12 @@ src/
     clipboard.js           Clipboard helper
     toast.js               Toast notification
   assets/
-    brand/                 Logo, icons, favicon, share image
+    brand/                 Logo, favicon (SVG, the "G" of the logo) and its PNG versions, share image
     highlights/            Home hero photos that aren't of a single product
     products/              Product photos (WebP)
 lib/slugify.js             Product name → URL slug (shared by build and validation)
 scripts/validate-data.js   Catalog data validation (runs before every build)
+scripts/build-icons.js     PNG favicon and iPhone home screen icon from favicon.svg
 scripts/optimize-images.js Photo pipeline (sharp): rotate, resize, WebP, rename; registers products (price from the file name) and prints hero.json lines
 tests/
   e2e/catalog.spec.js      End-to-end tests (Playwright)
@@ -129,6 +130,7 @@ npm install
 npm start          # dev server with live reload at http://localhost:8080/
 npm run build      # production build into _site/
 npm run validate   # check the catalog data only
+npm run icons      # regenerate the PNG icons from src/assets/brand/favicon.svg
 npm run images     # convert photos in photos-inbox/<category or Destaques>/ to 1200px WebP in src/assets/
 
 npm run test:install   # once: download the WebKit and Chromium test browsers

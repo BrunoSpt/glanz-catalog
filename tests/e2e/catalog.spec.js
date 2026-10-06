@@ -67,6 +67,15 @@ for (const path of pagePaths) {
   });
 }
 
+test("favicon: SVG for browsers that support it, PNG fallback and iPhone home screen icon", async ({ page }) => {
+  await page.goto("");
+  for (const selector of ['link[rel=icon][type="image/svg+xml"]', 'link[rel=icon][type="image/png"]', "link[rel=apple-touch-icon]"]) {
+    const href = await page.locator(selector).getAttribute("href");
+    const response = await page.request.get(new URL(href, page.url()).href);
+    expect(response.status(), href).toBe(200);
+  }
+});
+
 test("unknown addresses show the store's 404 page", async ({ page }) => {
   const response = await page.goto("this/page/does-not-exist");
   expect(response.status()).toBe(404);

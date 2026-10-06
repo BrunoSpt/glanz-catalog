@@ -10,7 +10,8 @@
     "validate": "node scripts/validate-data.js",
     "test": "playwright test",
     "test:install": "playwright install webkit chromium",
-    "images": "node scripts/optimize-images.js"
+    "images": "node scripts/optimize-images.js",
+    "icons": "node scripts/build-icons.js"
   },
   "engines": {
     "node": ">=20"
