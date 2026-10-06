@@ -306,6 +306,22 @@ test("phone details: no blue tap flash, Direct link label on one line", async ({
   for (const height of heights) expect(height).toBeLessThanOrEqual(42); // one line (min-height 40px)
 });
 
+test("cards show the interest-free installments next to the price, when the price allows", async ({ page }) => {
+  for (const category of categories) {
+    await page.goto(`${category.slug}/`);
+    // read every card at once: one locator per card would be slow with ~45 pieces
+    const shown = await page.locator(".card").evaluateAll((cards) =>
+      cards.map((card) => [card.querySelector(".name").textContent.trim(), card.querySelector(".card-installments")?.textContent ?? null])
+    );
+    const expected = inCategory(category.slug).map((product) => {
+      const plan = installmentPlan(product.price, policies.installments);
+      return [product.name, plan && !product.soldOut ? `ou ${plan.count}x de ${brl(plan.value)} sem juros` : null];
+    });
+    const normalize = (rows) => rows.map(([name, line]) => [name, line && normalizeSpaces(line)]);
+    expect(normalize(shown)).toEqual(normalize(expected));
+  }
+});
+
 test("category pages open in alphabetical order, with sold pieces last", async ({ page }) => {
   for (const category of categories) {
     const items = inCategory(category.slug);

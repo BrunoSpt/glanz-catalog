@@ -254,10 +254,14 @@ button{font:inherit;color:inherit}
 .card .name{font-family:'Playfair Display',serif;font-size:15px;font-weight:500;color:var(--maroon);line-height:1.3;margin:0 0 3px}
 .price{margin:0 0 2px;color:var(--muted);font-size:13.5px;font-weight:600}
 .price-old{font-weight:400;opacity:.75;margin-right:4px}
+.card-installments{margin:0 0 2px;font-size:12.5px;line-height:1.35;color:var(--muted)}
+.nowrap{white-space:nowrap} /* narrow cards break before "sem juros", never inside it */
 .card .price .price-current{color:var(--maroon)}
-/* the card's Direct action is a quiet link; the product page has the large button */
+/* the card's Direct action is a quiet link; the product page has the large button.
+   It follows the price directly: pinned to the bottom, a card without the installment
+   line would show a gap next to one that has it */
 .card-direct{
-  display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:auto;min-height:40px;
+  display:inline-flex;align-items:center;gap:6px;align-self:flex-start;min-height:40px;
   font-size:13px;font-weight:500;color:var(--maroon);white-space:nowrap;
   text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(135,38,21,.35);
 }

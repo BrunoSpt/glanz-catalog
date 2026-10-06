@@ -66,6 +66,12 @@
   <div class="info">
     <h3 class="name serif"><a href="{{ url }}">{{ product.name }}</a></h3>
     {{ price(product) }}
+    {#- same installment rule as the product page (storePolicies.json); pieces that
+        can't be split and sold pieces show no line #}
+    {%- set plan = product.price | installment %}
+    {%- if plan and not product.soldOut %}
+    <p class="card-installments">ou {{ plan.count }}x de {{ plan.value }} <span class="nowrap">sem juros</span></p>
+    {%- endif %}
     {{ directButton(product, "Perguntar no Direct", "card-direct") }}
   </div>
 </article>
