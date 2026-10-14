@@ -2,6 +2,8 @@
 
 Este guia explica como cadastrar e editar as peças do catálogo da GLANZ Semi Joias.
 
+Para entender o projeto inteiro (cada arquivo, ferramenta e linguagem, e como tudo funciona), veja o [guia completo do projeto](project-explained.pt-BR.md).
+
 ## Como funciona
 
 O site fica em **https://glanzsemijoias.pages.dev/** (hospedado de graça no Cloudflare Pages).

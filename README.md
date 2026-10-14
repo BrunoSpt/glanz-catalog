@@ -6,6 +6,7 @@ Mobile-first product catalog for **GLANZ Semi Joias**, a jewelry store in Petrol
 
 > The codebase is in English; the user interface is in Brazilian Portuguese (pt-BR), the store's language.
 > The store owner's guide (in Portuguese) is at [`docs/store-guide.pt-BR.md`](docs/store-guide.pt-BR.md).
+> A complete walkthrough of the whole project, file by file (in Portuguese), is at [`docs/project-explained.pt-BR.md`](docs/project-explained.pt-BR.md).
 
 ## Features
 
@@ -81,7 +82,7 @@ tests/
   e2e/catalog.spec.js      End-to-end tests (Playwright)
   serve-site.js            Serves _site/ like Cloudflare Pages for the tests
 playwright.config.js       Test projects: iPhone 17, narrow iPhone, desktop Chrome
-docs/                      Store owner's guide (pt-BR)
+docs/                      Store owner's guide and full project walkthrough (pt-BR)
 .github/workflows/         Build and deploy pipeline
 eleventy.config.js         Eleventy configuration and template filters
 ```
